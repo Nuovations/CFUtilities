@@ -323,27 +323,27 @@ AC_MSG_RESULT(${with_corefoundation_source})
 if test "${with_corefoundation_source}" = "auto"; then
 
     AC_CHECK_FRAMEWORK(CoreFoundation,
-                       [#include <CoreFoundation/CoreFoundation.h>],
-                       [CFAllocatorRef theAllocator = CFAllocatorGetDefault();],
-                       with_corefoundation_source="framework",
+                       [CFAllocatorGetDefault],
+                       [with_corefoundation_source="framework"
+                       LIBS="${LIBS} -framework CoreFoundation"],
                        AC_CHECK_LIB(CoreFoundation,
                                     CFAllocatorGetDefault,
-                                    with_corefoundation_source="cflite",
+                                    [with_corefoundation_source="cflite"
+                                    LIBS="${LIBS} -lCoreFoundation}"],
                                     with_corefoundation_source="none",))
 
 elif test "${with_corefoundation_source}" = "framework"; then
 
     AC_CHECK_FRAMEWORK(CoreFoundation,
-                       [#include <CoreFoundation/CoreFoundation.h>],
-                       [CFAllocatorRef theAllocator = CFAllocatorGetDefault();],
-                       with_corefoundation_source="framework",
+                       [CFAllocatorGetDefault],
+                       [LIBS="${LIBS} -framework CoreFoundation"],
                        with_corefoundation_source="none")
 
 elif test "${with_corefoundation_source}" = "cflite"; then
 
     AC_CHECK_LIB(CoreFoundation,
                  CFAllocatorGetDefault,
-                 with_corefoundation_source="cflite",
+                 [LIBS="${LIBS} -lCoreFoundation}"],
                  with_corefoundation_source="none",)
 
 fi

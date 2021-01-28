@@ -33,11 +33,9 @@ die()
 case "${TRAVIS_OS_NAME}" in
 
     osx)
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install automake libtool boost cppunit
-
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool boost cppunit
 
         ;;
-
 
     *)
         die "Unknown OS name \"${TRAVIS_OS_NAME}\"."
