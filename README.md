@@ -37,7 +37,7 @@ CoreFoundation objects and facilities are available:
 If you are not using a prebuilt distribution of CFUtilities, building CFUtilities
 should be a straightforward, two- or three-step process:
 
-    & ./bootstrap
+    % ./bootstrap
     % ./configure
     % make
 
