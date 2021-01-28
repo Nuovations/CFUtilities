@@ -2,9 +2,9 @@
 [![Coverage Status][CFUtilities-codecov-svg]][CFUtilities-codecov]
 
 [CFUtilities-travis]: https://travis-ci.com/Nuovations/CFUtilities
-[CFUtilities-travis-svg]: https://travis-ci.com/Nuovations/CFUtilities.svg?branch=master
+[CFUtilities-travis-svg]: https://travis-ci.com/Nuovations/CFUtilities.svg?branch=main
 [CFUtilities-codecov]: https://codecov.io/gh/Nuovations/CFUtilities
-[CFUtilities-codecov-svg]: https://codecov.io/gh/Nuovations/CFUtilities/branch/master/graph/badge.svg
+[CFUtilities-codecov-svg]: https://codecov.io/gh/Nuovations/CFUtilities/branch/main/graph/badge.svg
 
 Nuovations CoreFoundation Utilities
 ===================================
