@@ -1,8 +1,8 @@
 [![Build Status][CFUtilities-travis-svg]][CFUtilities-travis]
 [![Coverage Status][CFUtilities-codecov-svg]][CFUtilities-codecov]
 
-[CFUtilities-travis]: https://travis-ci.org/Nuovations/CFUtilities
-[CFUtilities-travis-svg]: https://travis-ci.org/Nuovations/CFUtilities.svg?branch=master
+[CFUtilities-travis]: https://travis-ci.com/Nuovations/CFUtilities
+[CFUtilities-travis-svg]: https://travis-ci.com/Nuovations/CFUtilities.svg?branch=master
 [CFUtilities-codecov]: https://codecov.io/gh/Nuovations/CFUtilities
 [CFUtilities-codecov-svg]: https://codecov.io/gh/Nuovations/CFUtilities/branch/master/graph/badge.svg
 
@@ -68,6 +68,14 @@ the appropriate instance based on the target platform.
 
 Regardless of the CoreFoundation source, CFUtilities has been proven to work
 with CoreFoundation versions between and 476.0 and 1258.1, inclusive.
+
+Additionally, CFUtilities depends on:
+
+  * Boost
+  * CppUnit
+
+However, CppUnit is only required when building and running the CFUtilities
+unit test suite.
 
 If you want to modify or otherwise maintain the CFUtilities build
 system, see "Maintaining CFUtilities" below for more information.
