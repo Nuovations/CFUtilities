@@ -37,7 +37,7 @@ before_script:
   - ./bootstrap
 
 script:
-  - ./configure -C --enable-coverage && make check
+  - ./configure -C --enable-coverage && make pretty-check && make check
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
