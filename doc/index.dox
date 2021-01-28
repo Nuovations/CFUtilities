@@ -1,0 +1,68 @@
+/**
+ *  @mainpage notitle
+ *
+ *  @section introduction Introduction
+ *
+ *  This package defines utility interfaces and objects for
+ *  interacting and working with Apple's CoreFoundation framework.
+ *
+ *  In particular, emphasis is placed on making interwork with POSIX,
+ *  C, and, in particular, C++ intrinsic types easier and/or more
+ *  type-safe.
+ *
+ *  Select interfaces and/or objects for working with the following
+ *  CoreFoundation objects and facilities are available:
+ * 
+ *    * @link base Reference counting and types @endlink
+ *    * @link boolean Booleans @endlink
+ *    * @link date-time Dates and Time @endlink
+ *    * @link dictionary Dictionaries @endlink
+ *    * @link number Numbers @endlink
+ *    * @link plist Property Lists @endlink
+ *    * @link set Sets @endlink
+ *    * @link string Strings @endlink
+ *    * @link tree Trees @endlink
+ *
+ */
+
+/**
+ *  @defgroup base Base
+ *
+ *  Interfaces for working with CoreFoundation reference counting and
+ *  introspecting types.
+ *
+ *  @defgroup boolean Booleans
+ *
+ *  Interfaces for working with CoreFoundation Booleans.
+ *
+ *  @defgroup date-time Date and Time
+ *
+ *  Interfaces for working with CoreFoundation dates and times.
+ *
+ *  @defgroup dictionary Dictionaries
+ *
+ *  Interfaces for working with CoreFoundation dictionaries.
+ *
+ *  @defgroup number Numbers
+ *
+ *  Interfaces for working with CoreFoundation numbers.
+ *
+ *  @defgroup plist Property Lists
+ *
+ *  Interfaces for working with CoreFoundation property lists.
+ *
+ *  @defgroup set Sets
+ *
+ *  Interfaces for working with CoreFoundation sets.
+ *
+ *  @defgroup string Strings
+ *
+ *  Objects and types for working with CoreFoundation strings.
+ *
+ *  @defgroup tree Trees
+ *
+ *  Interfaces for working with CoreFoundation trees.
+ *
+ */
+
+
