@@ -69,6 +69,14 @@ the appropriate instance based on the target platform.
 Regardless of the CoreFoundation source, CFUtilities has been proven to work
 with CoreFoundation versions between and 476.0 and 1258.1, inclusive.
 
+Additionally, CFUtilities depends on:
+
+  * Boost
+  * CppUnit
+
+However, CppUnit is only required when building and running the CFUtilities
+unit test suite.
+
 If you want to modify or otherwise maintain the CFUtilities build
 system, see "Maintaining CFUtilities" below for more information.
 
