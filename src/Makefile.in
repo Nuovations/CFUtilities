@@ -140,7 +140,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(SHELL) \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/include/CFUtilities-config.h
+CONFIG_HEADER = $(top_builddir)/include/CFUtilities/CFUConfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -191,7 +191,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include/CFUtilities
 depcomp = $(SHELL) \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/depcomp
 am__maybe_remake_depfiles = depfiles
@@ -413,6 +413,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libCFUtilities.la
 libCFUtilities_la_CPPFLAGS = \
+    -I$(top_builddir)/include         \
     -I$(top_srcdir)/include           \
     $(NULL)
 
