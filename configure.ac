@@ -447,27 +447,6 @@ if test "${nl_cv_build_tests}" = "yes"; then
 fi
 
 #
-# Check for headers
-#
-AC_HEADER_STDBOOL
-AC_HEADER_STDC
-
-AC_CHECK_HEADERS([stdint.h])
-AC_CHECK_HEADERS([string.h])
-
-#
-# Check for types and structures
-#
-AC_TYPE_INT8_T
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_UINT8_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
-
-#
 # Checks for library functions
 #
 
