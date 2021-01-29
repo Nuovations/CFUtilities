@@ -81,16 +81,16 @@ AC_CONFIG_MACRO_DIRS([third_party/nlbuild-autotools/repo/third_party/autoconf/m4
 # Tell autoconf what file the package is using to aggregate C preprocessor
 # defines.
 #
-AC_CONFIG_HEADERS([include/CFUtilities-config.h])
+AC_CONFIG_HEADERS([include/CFUtilities/CFUConfig.h])
 
 #
-# Guards against multiple inclusion of the BuildConfig.h
+# Guards against multiple inclusion of the CFUtilities/CFUConfig.h
 #
 
-AH_TOP([#ifndef CFUTILITIES_BUILD_CONFIG_H
-#define CFUTILITIES_BUILD_CONFIG_H])
+AH_TOP([#ifndef CFUTILITIES_CFUCONFIG_H
+#define CFUTILITIES_CFUCONFIG_H])
 
-AH_BOTTOM([#endif // CFUTILITIES_BUILD_CONFIG_H])
+AH_BOTTOM([#endif // CFUTILITIES_CFUCONFIG_H])
 
 #
 # Figure out what the canonical build, host and target tuples are.
