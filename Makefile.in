@@ -143,7 +143,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/mkinstalldirs
-CONFIG_HEADER = $(top_builddir)/include/CFUtilities-config.h
+CONFIG_HEADER = $(top_builddir)/include/CFUtilities/CFUConfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -232,6 +232,7 @@ CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in \
+	$(top_srcdir)/include/CFUtilities/CFUConfig.h.in \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/compile \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/config.guess \
 	$(top_srcdir)/third_party/nlbuild-autotools/repo/third_party/autoconf/config.sub \
@@ -550,6 +551,21 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
+
+include/CFUtilities/CFUConfig.h: include/CFUtilities/stamp-h1
+	@test -f $@ || rm -f include/CFUtilities/stamp-h1
+	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) include/CFUtilities/stamp-h1
+
+include/CFUtilities/stamp-h1: $(top_srcdir)/include/CFUtilities/CFUConfig.h.in $(top_builddir)/config.status
+	@rm -f include/CFUtilities/stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status include/CFUtilities/CFUConfig.h
+$(top_srcdir)/include/CFUtilities/CFUConfig.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
+	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
+	rm -f include/CFUtilities/stamp-h1
+	touch $@
+
+distclean-hdr:
+	-rm -f include/CFUtilities/CFUConfig.h include/CFUtilities/stamp-h1
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -930,8 +946,8 @@ clean-am: clean-generic clean-libtool mostlyclean-am
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+distclean-am: clean-am distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags
 
 dvi: dvi-recursive
 
@@ -1001,10 +1017,10 @@ uninstall-am: uninstall-dist_docDATA
 	clean-libtool cscope cscopelist-am ctags ctags-am dist \
 	dist-all dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar \
 	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-generic distclean-libtool distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dist_docDATA install-dvi \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dist_docDATA install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-ps install-ps-am \
