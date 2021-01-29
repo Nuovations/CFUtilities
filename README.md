@@ -35,15 +35,20 @@ CoreFoundation objects and facilities are available:
 ## Building CFUtilities
 
 If you are not using a prebuilt distribution of CFUtilities, building CFUtilities
-should be a straightforward, two- or three-step process:
+should be a straightforward, two- or three-step process. If you are building from
+the main branch, start with:
 
     % ./bootstrap
+
+If you are building from the main branch, a release branch, or a distribution
+package, continue (main branch) or start with:
+
     % ./configure
     % make
 
-The first `bootstrap` step creates the `configure` script and `Makefile.in` files from
-`configure.ac` and `Makefile.am` respectively and only needs to be done once unless those
-input files have changed.
+The first `bootstrap` step creates the `configure` script and `Makefile.in` files
+from `configure.ac` and `Makefile.am` respectively and only needs to be done once
+unless those input files have changed.
 
 The second `configure` step generates `Makefile` files from `Makefile.in` files and only
 needs to be done once unless those input files have changed.
