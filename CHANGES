@@ -1,3 +1,8 @@
+1.0.1 (2021-01-27)
+
+        * Updated configure.ac to avoid dependency on m4 macros that may not be
+          present or typically-installed on CI systems.
+
 1.0 (2021-01-27)
 
 	* First public release to Github.
