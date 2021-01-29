@@ -26,6 +26,7 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 lib_LTLIBRARIES                     = libCFUtilities.la
 
 libCFUtilities_la_CPPFLAGS          = \
+    -I$(top_builddir)/include         \
     -I$(top_srcdir)/include           \
     $(NULL)
 

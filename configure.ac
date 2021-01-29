@@ -81,16 +81,16 @@ AC_CONFIG_MACRO_DIRS([third_party/nlbuild-autotools/repo/third_party/autoconf/m4
 # Tell autoconf what file the package is using to aggregate C preprocessor
 # defines.
 #
-AC_CONFIG_HEADERS([include/CFUtilities-config.h])
+AC_CONFIG_HEADERS([include/CFUtilities/CFUConfig.h])
 
 #
-# Guards against multiple inclusion of the BuildConfig.h
+# Guards against multiple inclusion of the CFUtilities/CFUConfig.h
 #
 
-AH_TOP([#ifndef CFUTILITIES_BUILD_CONFIG_H
-#define CFUTILITIES_BUILD_CONFIG_H])
+AH_TOP([#ifndef CFUTILITIES_CFUCONFIG_H
+#define CFUTILITIES_CFUCONFIG_H])
 
-AH_BOTTOM([#endif // CFUTILITIES_BUILD_CONFIG_H])
+AH_BOTTOM([#endif // CFUTILITIES_CFUCONFIG_H])
 
 #
 # Figure out what the canonical build, host and target tuples are.
@@ -445,27 +445,6 @@ if test "${nl_cv_build_tests}" = "yes"; then
     )
 
 fi
-
-#
-# Check for headers
-#
-AC_HEADER_STDBOOL
-AC_HEADER_STDC
-
-AC_CHECK_HEADERS([stdint.h])
-AC_CHECK_HEADERS([string.h])
-
-#
-# Check for types and structures
-#
-AC_TYPE_INT8_T
-AC_TYPE_INT16_T
-AC_TYPE_INT32_T
-AC_TYPE_INT64_T
-AC_TYPE_UINT8_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT64_T
 
 #
 # Checks for library functions
