@@ -37,7 +37,6 @@ case "${TRAVIS_OS_NAME}" in
 
         ;;
 
-
     *)
         die "Unknown OS name \"${TRAVIS_OS_NAME}\"."
 

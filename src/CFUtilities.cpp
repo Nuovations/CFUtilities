@@ -32,7 +32,7 @@
 #include <CFUtilities/CFUtilities.h>
 #include <CFUtilities/CFUtilities.hpp>
 
-#include "CFUtilities-config.h"
+#include "CFUtilities/CFUConfig.h"
 
 
 using namespace std;
