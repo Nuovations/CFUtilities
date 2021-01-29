@@ -1,3 +1,8 @@
+1.0.2 (2021-01-29)
+
+        * Remove anachronistic configure checks and refactor configuration
+          header.
+
 1.0.1 (2021-01-27)
 
         * Updated configure.ac to avoid dependency on m4 macros that may not be
