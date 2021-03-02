@@ -18,40 +18,46 @@
 
 #
 #    Description:
-#      This file is the GNU automake template for the Nuovations CoreFoundation Utilities Library/Framework.
+#      This file is the GNU automake template for the Nuovations CoreFoundation
+#      Utilities Library/Framework.
 #
 
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
-AM_MAKEFLAGS                              = --no-print-directory
+AM_MAKEFLAGS                                     = --no-print-directory
 
-SUBDIRS                                   = \
-    third_party                             \
-    include                                 \
-    src                                     \
-    tests                                   \
-    doc                                     \
+SUBDIRS                                          = \
+    third_party                                    \
+    include                                        \
+    src                                            \
+    tests                                          \
+    doc                                            \
     $(NULL)
 
-EXTRA_DIST                                = \
-    Makefile-bootstrap                      \
-    .default-version                        \
-    bootstrap                               \
-    bootstrap-configure                     \
-    CHANGES                                 \
-    LICENSE                                 \
-    README.md                               \
+EXTRA_DIST                                       = \
+    Makefile-bootstrap                             \
+    .clang-format                                  \
+    .default-version                               \
+    .travis.yml                                    \
+    .travis/before_install.sh                      \
+    bootstrap                                      \
+    bootstrap-configure                            \
+    build/clang-format/clang-format-pretty.options \
+    build/cstyle/cstyle.options                    \
+    README.md                                      \
     $(NULL)
 
-BUILT_SOURCES                             = \
-    .local-version                          \
+BUILT_SOURCES                                    = \
+    .local-version                                 \
     $(NULL)
 
-dist_doc_DATA                             = \
+dist_doc_DATA                                    = \
+    CHANGES                                        \
+    LICENSE                                        \
     $(NULL)
 
-DISTCLEANFILES                            = \
-    .local-version                          \
+DISTCLEANFILES                                   = \
+    .local-version                                 \
     $(NULL)
 
 #
@@ -98,8 +104,8 @@ export MAYBE_CFUTILITIES_VERSION        := $(if $(filter 0,$(MAKELEVEL)),$(shell
 
 CFUTILITIES_VERSION                     ?= $(MAYBE_CFUTILITIES_VERSION)
 
-PACKAGE_VERSION                    = $(CFUTILITIES_VERSION)
-VERSION                            = $(PACKAGE_VERSION)
+PACKAGE_VERSION                          = $(CFUTILITIES_VERSION)
+VERSION                                  = $(PACKAGE_VERSION)
 
 #
 # check-file-.local-version
@@ -116,10 +122,10 @@ VERSION                            = $(PACKAGE_VERSION)
 define check-file-.local-version
 if [ "$(origin CFUTILITIES_VERSION)" != "file" ]; then \
     echo "$(CFUTILITIES_VERSION)" > "$(2)";            \
-else                                                             \
-    $(abs_top_nlbuild_autotools_dir)/scripts/mkversion           \
+else                                                   \
+    $(abs_top_nlbuild_autotools_dir)/scripts/mkversion \
         -b "$(CFUTILITIES_VERSION)" "$(top_srcdir)"    \
-        > "$(2)";                                                \
+        > "$(2)";                                      \
 fi
 endef
 
