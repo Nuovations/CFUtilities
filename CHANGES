@@ -1,3 +1,7 @@
+1.0.3 (2021-03-02)
+
+        * Minor build system changes such that 'make dist' works correctly.
+
 1.0.2 (2021-01-29)
 
         * Remove anachronistic configure checks and refactor configuration
