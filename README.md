@@ -134,7 +134,6 @@ On Mac OS X, these dependencies can be installed and satisfied using
 
     % brew install autoconf automake libtool
 
-
 # Interact
 
 There are numerous avenues for CFUtilities support:
