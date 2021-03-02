@@ -7,12 +7,17 @@ AlignConsecutiveDeclarations: true
 AlignConsecutiveMacros: true
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
+AllowShortFunctionsOnASingleLine: Empty
 AlwaysBreakAfterDefinitionReturnType: All
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Linux
+BreakBeforeInheritanceComma: false
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
 ColumnLimit: 80
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
 Cpp11BracedListStyle: false
 FixNamespaceComments: true
 IndentWidth: 4
@@ -23,6 +28,7 @@ PointerAlignment: Middle
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: true
 SpaceBeforeAssignmentOperators: true
+SpaceBeforeCtorInitializerColon: true
 SpaceBeforeParens: ControlStatementsExceptForEachMacros
 SpaceBeforeSquareBrackets: false
 SpacesBeforeTrailingComments: 1
