@@ -32,7 +32,9 @@
 #include <CFUtilities/CFUtilities.h>
 #include <CFUtilities/CFUtilities.hpp>
 
+#if defined(HAVE_CONFIG_H)
 #include "CFUtilities/CFUConfig.h"
+#endif
 
 
 using namespace std;
@@ -719,6 +721,8 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                                                &theFormat,
                                                outError);
     __Require_Action(*outPlist != NULL, done, status = false);
+#else // !HAVE_CFPROPERTYLISTCREATEWITHSTREAM || !HAVE_CFPROPERTYLISTCREATEFROMSTREAM
+#error "One of 'CFPropertyListCreateWithStream' or 'CFPropertyListCreateFromStream' must be available."
 #endif // HAVE_CFPROPERTYLISTCREATEWITHSTREAM
 
     // At this point, all operations were successful. Set the return
@@ -816,6 +820,8 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
                                            inFormat,
                                            outError);
     __Require_Action(theIndex != 0, done, status = false);
+#else // !HAVE_CFPROPERTYLISTWRITE || !HAVE_CFPROPERTYLISTWRITETOSTREAM
+#error "One of 'CFPropertyListWrite' or 'CFPropertyListWriteToStream' must be available."
 #endif // HAVE_CFPROPERTYLISTWRITE
 
     // At this point, all operations were successful. Set the return
