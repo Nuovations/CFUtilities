@@ -32,7 +32,9 @@
 #include <CFUtilities/CFUtilities.h>
 #include <CFUtilities/CFUtilities.hpp>
 
+#if defined(HAVE_CONFIG_H)
 #include "CFUtilities/CFUConfig.h"
+#endif
 
 
 using namespace std;
