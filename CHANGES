@@ -1,3 +1,9 @@
+1.0.5 (2021-04-07)
+
+        * Ensure CFUConfig.h is wrapped with HAVE_CONFIG_H.
+        * Ensure that compilation fails if CFPropertyList stream read/write
+          API HAVE_* preprocessor definitions are not asserted.
+
 1.0.4 (2021-03-03)
 
         * Updated nlbuild-autotools to 1.6.14.
