@@ -1,3 +1,11 @@
+1.1 (2021-05-20)
+
+        * Added 'GetUTF8String' convenience method.
+
+        * Added an encoding cache to ensure that 'GetCString' and
+          'GetUTF8String' always return a non-null result, but
+          potentially in non-O(1) time.
+
 1.0.5 (2021-04-07)
 
         * Ensure CFUConfig.h is wrapped with HAVE_CONFIG_H.
