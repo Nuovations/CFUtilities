@@ -75,6 +75,9 @@ TestCFMutableString :: TestDefaultConstruction(void)
     lCString = lMutableString.GetCString();
     CPPUNIT_ASSERT(lCString != NULL);
 
+    lCString = lMutableString.GetUTF8String();
+    CPPUNIT_ASSERT(lCString != NULL);
+
     l3WayComparison = strcmp(lCString, "");
     CPPUNIT_ASSERT(l3WayComparison == 0);
 
@@ -194,6 +197,12 @@ TestCFMutableString :: Test(const CFMutableString & aString,
     CPPUNIT_ASSERT(lEmpty == false);
 
     lCString = aString.GetCString();
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, aCString);
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = aString.GetUTF8String();
     CPPUNIT_ASSERT(lCString != NULL);
 
     l3WayComparison = strcmp(lCString, aCString);

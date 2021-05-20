@@ -37,6 +37,7 @@ class TestCFString :
     CPPUNIT_TEST(TestCFStringAssignment);
     CPPUNIT_TEST(TestEquality);
     CPPUNIT_TEST(TestSwap);
+    CPPUNIT_TEST(TestEncodingCache);
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -47,11 +48,16 @@ public:
     void TestCFStringAssignment(void);
     void TestEquality(void);
     void TestSwap(void);
+    void TestEncodingCache(void);
 
 private:
     void Test(const CFString & aString,
               CFStringRef      aCFString,
               const char *     aCString);
+    void Test(const CFString & aString,
+              CFStringRef      aCFString,
+              const char *     aCString,
+              const bool &     aEmpty);
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestCFString);
@@ -75,6 +81,9 @@ TestCFString :: TestDefaultConstruction(void)
     lCString = lString.GetCString();
     CPPUNIT_ASSERT(lCString != NULL);
 
+    lCString = lString.GetUTF8String();
+    CPPUNIT_ASSERT(lCString != NULL);
+
     l3WayComparison = strcmp(lCString, "");
     CPPUNIT_ASSERT(l3WayComparison == 0);
 
@@ -85,49 +94,74 @@ TestCFString :: TestDefaultConstruction(void)
 void
 TestCFString :: TestCFStringRefConstruction(void)
 {
-    CFStringRef lCFStringInput = CFSTR("Test String");
-    CFString    lString(lCFStringInput);
+    static const bool kIsEmpty = true;
+    CFStringRef       lCFStringInput_1 = CFSTR("");
+    CFString          lString_1(lCFStringInput_1);
+    CFStringRef       lCFStringInput_2 = CFSTR("CFStringRef Construction Test String");
+    CFString          lString_2(lCFStringInput_2);
 
-    Test(lString, lCFStringInput, "Test String");
+    Test(lString_1, lCFStringInput_1, "", kIsEmpty);
+    Test(lString_2, lCFStringInput_2, "CFStringRef Construction Test String");
 }
 
 void
 TestCFString :: TestCFStringConstruction(void)
 {
-    CFStringRef lCFStringInput = CFSTR("Test String");
-    CFString    lInitialString(lCFStringInput);
-    CFString    lSecondaryString(lInitialString);
+    static const bool kIsEmpty = true;
+    CFStringRef       lCFStringInput_1 = CFSTR("");
+    CFString          lInitialString_1(lCFStringInput_1);
+    CFString          lSecondaryString_1(lInitialString_1);
+    CFStringRef       lCFStringInput_2 = CFSTR("CFString Construction Test String");
+    CFString          lInitialString_2(lCFStringInput_2);
+    CFString          lSecondaryString_2(lInitialString_2);
 
-    Test(lSecondaryString, lCFStringInput, "Test String");
+    Test(lSecondaryString_1, lCFStringInput_1, "", kIsEmpty);
+    Test(lSecondaryString_2, lCFStringInput_2, "CFString Construction Test String");
 }
 
 void
 TestCFString :: TestCFStringRefAssignment(void)
 {
-    CFStringRef lCFStringInput = CFSTR("Test String");
-    CFString    lString;
+    static const bool kIsEmpty = true;
+    CFStringRef       lCFStringInput_1 = CFSTR("");
+    CFString          lString_1;
+    CFStringRef       lCFStringInput_2 = CFSTR("CFStringRef Assignment Test String");
+    CFString          lString_2;
 
-    lString = lCFStringInput;
+    lString_1 = lCFStringInput_1;
 
-    Test(lString, lCFStringInput, "Test String");
+    Test(lString_1, lCFStringInput_1, "", kIsEmpty);
+
+    lString_2 = lCFStringInput_2;
+
+    Test(lString_2, lCFStringInput_2, "CFStringRef Assignment Test String");
 }
 
 void
 TestCFString :: TestCFStringAssignment(void)
 {
-    CFStringRef lCFStringInput = CFSTR("Test String");
-    CFString    lInitialString(lCFStringInput);
-    CFString    lSecondaryString;
+    static const bool kIsEmpty = true;
+    CFStringRef       lCFStringInput_1 = CFSTR("");
+    CFString          lInitialString_1(lCFStringInput_1);
+    CFString          lSecondaryString_1;
+    CFStringRef       lCFStringInput_2 = CFSTR("CFString Assignment Test String");
+    CFString          lInitialString_2(lCFStringInput_2);
+    CFString          lSecondaryString_2;
 
-    lSecondaryString = lInitialString;
+    lSecondaryString_1 = lInitialString_1;
 
-    Test(lSecondaryString, lCFStringInput, "Test String");
+    Test(lSecondaryString_1, lCFStringInput_1, "", kIsEmpty);
+
+    lSecondaryString_2 = lInitialString_2;
+
+    Test(lSecondaryString_2, lCFStringInput_2, "CFString Assignment Test String");
 }
 
 void
 TestCFString :: Test(const CFString & aString,
                      CFStringRef      aCFString,
-                     const char *     aCString)
+                     const char *     aCString,
+                     const bool &     aEmpty)
 {
     CFIndex      lLength;
     bool         lEmpty;
@@ -135,13 +169,20 @@ TestCFString :: Test(const CFString & aString,
     int          l3WayComparison;
     CFStringRef  lCFString;
 
+
     lLength = aString.GetLength();
     CPPUNIT_ASSERT(lLength == CFStringGetLength(aCFString));
 
     lEmpty = aString.IsEmpty();
-    CPPUNIT_ASSERT(lEmpty == false);
+    CPPUNIT_ASSERT(lEmpty == aEmpty);
 
     lCString = aString.GetCString();
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, aCString);
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = aString.GetUTF8String();
     CPPUNIT_ASSERT(lCString != NULL);
 
     l3WayComparison = strcmp(lCString, aCString);
@@ -150,6 +191,16 @@ TestCFString :: Test(const CFString & aString,
     lCFString = aString.GetString();
     CPPUNIT_ASSERT(lCFString != NULL);
     CPPUNIT_ASSERT(lCFString == aCFString);
+}
+
+void
+TestCFString :: Test(const CFString & aString,
+                     CFStringRef      aCFString,
+                     const char *     aCString)
+{
+    static const bool kIsEmpty = true;
+
+    Test(aString, aCFString, aCString, !kIsEmpty);
 }
 
 void
@@ -182,4 +233,133 @@ TestCFString :: TestSwap(void)
 
     lStringRef = lNonDefaultString.GetString();
     CPPUNIT_ASSERT(lStringRef == NULL);
+}
+
+void
+TestCFString :: TestEncodingCache(void)
+{
+    const bool   kIsExternalRepresentation = true;
+    CFStringRef  lCFStringASCIIInput = CFSTR("Test String");
+    CFString     lCFStringASCII(lCFStringASCIIInput);
+    UInt8        lNonASCIIUTF8Bytes[]     = { 'T', 'e', 's', 't',
+                                              's', 't', 'r',
+                                              0xc3, 0xa4,
+                                              'n', 'g' };
+    CFIndex      lNonASCIIUTF8Length      = 11;
+    UInt8        lNonASCIIMacRomanBytes[] = { 'T', 'e', 's', 't',
+                                              's', 't', 'r',
+                                              0x8a,
+                                              'n', 'g' };
+    CFIndex      lNonASCIIMacRomanLength  = 10;
+    CFStringRef  lCFStringNonASCIIInput;
+    CFString     lCFStringNonASCII;
+    const char * lCString;
+    int          l3WayComparison;
+
+    lCFStringNonASCIIInput = CFStringCreateWithBytes(kCFAllocatorDefault,
+                                                     &lNonASCIIUTF8Bytes[0],
+                                                     lNonASCIIUTF8Length,
+                                                     kCFStringEncodingUTF8,
+                                                     !kIsExternalRepresentation);
+    CPPUNIT_ASSERT(lCFStringNonASCIIInput != NULL);
+
+    lCFStringNonASCII = lCFStringNonASCIIInput;
+
+    // 1: Test encoding wrappers on ASCII input content with
+    //    ASCII-compatible encodings for the input.
+
+    lCString = lCFStringASCII.GetCString();
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetUTF8String();
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingASCII);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingMacRoman);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingWindowsLatin1);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingISOLatin1);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingNextStepLatin);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    lCString = lCFStringASCII.GetCString(kCFStringEncodingUTF8);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = strcmp(lCString, "Test String");
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    // 2: Test encoding wrappers on non-ASCII input content with
+    //    select encodings for the input.
+
+    // 2.1: UTF-8
+
+    // 2.1.1: Likely cache-miss (non-O(1) access).
+
+    lCString = lCFStringNonASCII.GetCString(kCFStringEncodingUTF8);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = memcmp(lCString,
+                             &lNonASCIIUTF8Bytes[0],
+                             static_cast<size_t>(lNonASCIIUTF8Length));
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    // 2.1.2: Likely cache-hit (O(1) access).
+
+    lCString = lCFStringNonASCII.GetCString(kCFStringEncodingUTF8);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = memcmp(lCString,
+                             &lNonASCIIUTF8Bytes[0],
+                             static_cast<size_t>(lNonASCIIUTF8Length));
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    // 2.2: Mac Roman
+
+    // 2.2.1: Likely cache-miss (non-O(1) access).
+
+    lCString = lCFStringNonASCII.GetCString(kCFStringEncodingMacRoman);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = memcmp(lCString,
+                             &lNonASCIIMacRomanBytes[0],
+                             static_cast<size_t>(lNonASCIIMacRomanLength));
+    CPPUNIT_ASSERT(l3WayComparison == 0);
+
+    // 2.2.2: Likely cache-hit (O(1) access).
+
+    lCString = lCFStringNonASCII.GetCString(kCFStringEncodingMacRoman);
+    CPPUNIT_ASSERT(lCString != NULL);
+
+    l3WayComparison = memcmp(lCString,
+                             &lNonASCIIMacRomanBytes[0],
+                             static_cast<size_t>(lNonASCIIMacRomanLength));
+    CPPUNIT_ASSERT(l3WayComparison == 0);
 }
