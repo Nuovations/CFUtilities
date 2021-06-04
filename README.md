@@ -1,8 +1,8 @@
-[![Build Status][CFUtilities-travis-svg]][CFUtilities-travis]
+[![Build Status][CFUtilities-github-action-svg]][CFUtilities-github-action]
 [![Coverage Status][CFUtilities-codecov-svg]][CFUtilities-codecov]
 
-[CFUtilities-travis]: https://travis-ci.com/Nuovations/CFUtilities
-[CFUtilities-travis-svg]: https://travis-ci.com/Nuovations/CFUtilities.svg?branch=main
+[CFUtilities-github-action]: https://github.com/nuovations/CFUtilities
+[CFUtilities-github-action-svg]: https://github.com/nuovations/CFUtilities/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
 [CFUtilities-codecov]: https://codecov.io/gh/Nuovations/CFUtilities
 [CFUtilities-codecov-svg]: https://codecov.io/gh/Nuovations/CFUtilities/branch/main/graph/badge.svg
 
