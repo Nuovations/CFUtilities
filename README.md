@@ -1,8 +1,9 @@
 [![Build Status][CFUtilities-github-action-svg]][CFUtilities-github-action]
 [![Coverage Status][CFUtilities-codecov-svg]][CFUtilities-codecov]
 
-[CFUtilities-github-action]: https://github.com/nuovations/CFUtilities
-[CFUtilities-github-action-svg]: https://github.com/nuovations/CFUtilities/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
+[CFUtilities-github]: https://github.com/nuovations/CFUtilities
+[CFUtilities-github-action]: https://github.com/nuovations/CFUtilities/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
+[CFUtilities-github-action-svg]: https://github.com/nuovations/CFUtilities/actions/workflows/build.yml/badge.svg?branch=main&event=push
 [CFUtilities-codecov]: https://codecov.io/gh/Nuovations/CFUtilities
 [CFUtilities-codecov-svg]: https://codecov.io/gh/Nuovations/CFUtilities/branch/main/graph/badge.svg
 
