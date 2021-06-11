@@ -201,7 +201,7 @@ CFUAbsoluteTimeGetPOSIXTime(CFAbsoluteTime inAt)
 CFAbsoluteTime
 CFUPOSIXTimeGetAbsoluteTime(time_t inTime)
 {
-    return (inTime - kCFAbsoluteTimeIntervalSince1970);
+    return (static_cast<CFAbsoluteTime>(inTime) - kCFAbsoluteTimeIntervalSince1970);
 }
 
 /**
