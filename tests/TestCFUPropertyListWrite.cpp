@@ -285,7 +285,6 @@ TestCFUPropertyListWriteToFile :: TestInvalidCStringFormat(void)
                                          lPropertyList,
                                          &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
@@ -374,7 +373,6 @@ TestCFUPropertyListWriteToFile :: TestInvalidCFStringFormat(void)
                                          lPropertyList,
                                          &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
@@ -494,7 +492,6 @@ TestCFUPropertyListWriteToURL :: TestInvalidFormat(void)
                                         lPropertyList,
                                         &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
