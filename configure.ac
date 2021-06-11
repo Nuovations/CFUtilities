@@ -329,7 +329,7 @@ if test "${with_corefoundation_source}" = "auto"; then
                        AC_CHECK_LIB(CoreFoundation,
                                     CFAllocatorGetDefault,
                                     [with_corefoundation_source="cflite"
-                                    LIBS="${LIBS} -lCoreFoundation}"],
+                                    LIBS="${LIBS} -lCoreFoundation"],
                                     with_corefoundation_source="none",))
 
 elif test "${with_corefoundation_source}" = "framework"; then
@@ -343,7 +343,7 @@ elif test "${with_corefoundation_source}" = "cflite"; then
 
     AC_CHECK_LIB(CoreFoundation,
                  CFAllocatorGetDefault,
-                 [LIBS="${LIBS} -lCoreFoundation}"],
+                 [LIBS="${LIBS} -lCoreFoundation"],
                  with_corefoundation_source="none",)
 
 fi
