@@ -221,9 +221,9 @@ TestCFUPropertyListWriteToFile :: tearDown(void)
 void
 TestCFUPropertyListWriteToFile :: TestNull(void)
 {
-    const CFPropertyListFormat kFormat   = kCFPropertyListXMLFormat_v1_0;
-    const bool                 kWritable = true;
-    CFPropertyListRef          lPropertyList;
+    const CFPropertyListFormat kFormat       = kCFPropertyListXMLFormat_v1_0;
+    const bool                 kWritable     = true;
+    CFPropertyListRef          lPropertyList = NULL;
     bool                       lStatus;
 
     // NULL-terminated C string path
@@ -441,10 +441,10 @@ TestCFUPropertyListWriteToURL :: tearDown(void)
 void
 TestCFUPropertyListWriteToURL :: TestNull(void)
 {
-    const CFPropertyListFormat kFormat      = kCFPropertyListXMLFormat_v1_0;
-    const bool                 kIsDirectory = true;
-    CFURLRef                   lURLRef      = NULL;
-    CFPropertyListRef          lPropertyList;
+    const CFPropertyListFormat kFormat       = kCFPropertyListXMLFormat_v1_0;
+    const bool                 kIsDirectory  = true;
+    CFURLRef                   lURLRef       = NULL;
+    CFPropertyListRef          lPropertyList = NULL;
     bool                       lStatus;
 
     lURLRef = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
