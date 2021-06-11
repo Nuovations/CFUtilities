@@ -317,8 +317,105 @@ AC_ARG_WITH(corefoundation-source,
 
 AC_MSG_RESULT(${with_corefoundation_source})
 
-# At this point, the source is one of the allowed values. If it's
-# 'auto' we autodetect it.
+#
+# Checks for libraries and packages.
+#
+# At minimum, the following packages are optional, depending on
+# configuration:
+#
+#   * Boost
+#   * CppUnit
+#   * [Open]CFLite
+#
+AC_MSG_NOTICE([checking required package dependencies])
+
+# Check if the build host has pkg-config
+
+AC_PATH_PROG([PKG_CONFIG],[pkg-config])
+
+#
+# Boost
+#
+
+NL_WITH_REQUIRED_EXTERNAL_PACKAGE([Boost],
+[BOOST],
+[boost],
+[],
+[
+    # Check for required Boost (C++) headers.
+
+    AC_LANG_PUSH([C++])
+
+        AC_CHECK_HEADERS([boost/type_traits.hpp],
+            [],
+            [
+                AC_MSG_ERROR(The Boost header "$ac_header" is required but cannot be found.)
+            ]
+            )
+
+    AC_LANG_POP
+]
+)
+
+#
+# CppUnit
+#
+
+if test "${nl_cv_build_tests}" = "yes"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CppUnit],
+    [CPPUNIT],
+    [cppunit],
+    [cppunit],
+    [
+        # Check for required Boost (C++) headers.
+
+        AC_LANG_PUSH([C++])
+
+            AC_CHECK_HEADERS([cppunit/BriefTestProgressListener.h] [cppunit/CompilerOutputter.h] [cppunit/TestAssert.h] [cppunit/TestResult.h] [cppunit/TestResultCollector.h] [cppunit/extensions/HelperMacros.h] [cppunit/extensions/TestFactoryRegistry.h] [cppunit/ui/text/TestRunner.h],
+                [],
+                [
+                    AC_MSG_ERROR(The CppUnit header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
+#
+# [Open]CFLite
+#
+
+if test "${with_corefoundation_source}" == "cflite"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CoreFoundation],
+    [CF],
+    [CoreFoundation],
+    [CoreFoundation],
+    [
+        # Check for required CoreFoundation (via [Open]CFLite) headers.
+
+        AC_LANG_PUSH([C])
+
+            AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h],
+                [],
+                [
+                    AC_MSG_ERROR(The CoreFoundation header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
+# At this point, the CoreFoundation source is one of the allowed
+# values and, if [Open]CFLite, we have detected the location of a
+# package providing it. If it's 'auto' we autodetect it.
 
 if test "${with_corefoundation_source}" = "auto"; then
 
@@ -378,73 +475,6 @@ AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_FRAMEWORK],[${CFUTILITIES_CF_SOURCE_FR
 AC_SUBST(CFUTILITIES_CF_SOURCE_CFLITE)
 AM_CONDITIONAL([CFUTILITIES_CF_SOURCE_CFLITE], [test "${CFUTILITIES_CF_SOURCE}" = "cflite"])
 AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_CFLITE],[${CFUTILITIES_CF_SOURCE_CFLITE}],[Define to 1 if you want to use an [Open]CFLite implementation source of CoreFoundation for CFUtilities])
-
-#
-# Checks for libraries and packages.
-#
-# At minimum, the following packages are optional, depending on
-# configuration:
-#
-#   * Boost
-#   * CppUnit
-#
-AC_MSG_NOTICE([checking required package dependencies])
-
-# Check if the build host has pkg-config
-
-AC_PATH_PROG([PKG_CONFIG],[pkg-config])
-
-#
-# Boost
-#
-
-NL_WITH_REQUIRED_EXTERNAL_PACKAGE([Boost],
-[BOOST],
-[boost],
-[],
-[
-    # Check for required Boost (C++) headers.
-
-    AC_LANG_PUSH([C++])
-
-        AC_CHECK_HEADERS([boost/type_traits.hpp],
-            [],
-            [
-                AC_MSG_ERROR(The Boost header "$ac_header" is required but cannot be found.)
-            ]
-            )
-
-    AC_LANG_POP
-]
-)
-
-#
-# CppUnit
-#
-
-if test "${nl_cv_build_tests}" = "yes"; then
-
-    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CppUnit],
-    [CPPUNIT],
-    [cppunit],
-    [cppunit],
-    [
-        # Check for required Boost (C++) headers.
-
-        AC_LANG_PUSH([C++])
-
-            AC_CHECK_HEADERS([cppunit/BriefTestProgressListener.h] [cppunit/CompilerOutputter.h] [cppunit/TestAssert.h] [cppunit/TestResult.h] [cppunit/TestResultCollector.h] [cppunit/extensions/HelperMacros.h] [cppunit/extensions/TestFactoryRegistry.h] [cppunit/ui/text/TestRunner.h],
-                [],
-                [
-                    AC_MSG_ERROR(The CppUnit header "$ac_header" is required but cannot be found.)
-                ]
-                )
-
-        AC_LANG_POP
-    ]
-    )
-
-fi
 
 #
 # Checks for library functions
@@ -543,6 +573,9 @@ AC_MSG_NOTICE([
   Boost compile flags                         : ${BOOST_CPPFLAGS:--}
   Boost link flags                            : ${BOOST_LDFLAGS:--}
   Boost link libraries                        : ${BOOST_LIBS:--}
+  CoreFoundation compile flags                : ${CF_CPPFLAGS:--}
+  CoreFoundation link flags                   : ${CF_LDFLAGS:--}
+  CoreFoundation link libraries               : ${CF_LIBS:--}
   CppUnit compile flags                       : ${CPPUNIT_CPPFLAGS:--}
   CppUnit link flags                          : ${CPPUNIT_LDFLAGS:--}
   CppUnit link libraries                      : ${CPPUNIT_LIBS:--}
