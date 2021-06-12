@@ -315,6 +315,23 @@ AC_ARG_WITH(corefoundation-source,
     ],
     [with_corefoundation_source=auto])
 
+# At this point, the CoreFoundation source is one of the allowed
+# values. If it's 'auto' we autodetect it, based on the target OS.
+
+if test "${with_corefoundation_source}" = "auto"; then
+    case ${target_os} in
+
+	*darwin*)
+            with_corefoundation_source=framework
+	    ;;
+
+	*)
+            with_corefoundation_source=cflite
+	    ;;
+
+    esac
+fi
+
 AC_MSG_RESULT(${with_corefoundation_source})
 
 #
@@ -425,8 +442,7 @@ if test "${with_corefoundation_source}" = "auto"; then
                        LIBS="${LIBS} -framework CoreFoundation"],
                        AC_CHECK_LIB(CoreFoundation,
                                     CFAllocatorGetDefault,
-                                    [with_corefoundation_source="cflite"
-                                    LIBS="${LIBS} -lCoreFoundation"],
+                                    [with_corefoundation_source="cflite"],
                                     with_corefoundation_source="none",))
 
 elif test "${with_corefoundation_source}" = "framework"; then
@@ -440,7 +456,7 @@ elif test "${with_corefoundation_source}" = "cflite"; then
 
     AC_CHECK_LIB(CoreFoundation,
                  CFAllocatorGetDefault,
-                 [LIBS="${LIBS} -lCoreFoundation"],
+                 [],
                  with_corefoundation_source="none",)
 
 fi
@@ -495,6 +511,18 @@ if test "${ac_no_link}" != "yes"; then
     AC_CHECK_FUNCS(CFPropertyListWriteToStream CFPropertyListWrite)
 
 fi
+
+# Add any Boost CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${BOOST_CPPFLAGS}"
+LIBS="${LIBS} ${BOOST_LIBS}"
+LDFLAGS="${LDFLAGS} ${BOOST_LDFLAGS}"
+
+# Add any CoreFoundation CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${CF_CPPFLAGS}"
+LIBS="${LIBS} ${CF_LIBS}"
+LDFLAGS="${LDFLAGS} ${CF_LDFLAGS}"
 
 # Add any code coverage CPPFLAGS and LIBS
 
