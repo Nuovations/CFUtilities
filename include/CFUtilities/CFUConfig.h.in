@@ -32,6 +32,10 @@
 /* Define to 1 if you have the `CFPropertyListWriteToStream' function. */
 #undef HAVE_CFPROPERTYLISTWRITETOSTREAM
 
+/* Define to 1 if you have the <CoreFoundation/CoreFoundation.h> header file.
+   */
+#undef HAVE_COREFOUNDATION_COREFOUNDATION_H
+
 /* Define to 1 if you have the <cppunit/BriefTestProgressListener.h> header
    file. */
 #undef HAVE_CPPUNIT_BRIEFTESTPROGRESSLISTENER_H
@@ -67,6 +71,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `CoreFoundation' library (-lCoreFoundation). */
+#undef HAVE_LIBCOREFOUNDATION
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
