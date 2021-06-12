@@ -30,11 +30,16 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     name: "Linux ${{matrix.compiler['name']}}"
+
+    # Coverage seems to have a problem on Linux with clang due to an
+    # 'atexit' issue during linking of the test executables. So, only
+    # assert '--enable-coverage' for GCC.
+
     strategy:
       matrix:
         compiler:
-          - { name: GCC,        c: gcc,   cxx: g++ }
-          - { name: clang/LLVM, c: clang, cxx: clang++ }
+          - { name: GCC,        c: gcc,   cxx: g++     options: "--enable-coverage" }
+          - { name: clang/LLVM, c: clang, cxx: clang++ options: "" }
     env:
       CC: ${{matrix.compiler['c']}}
       CXX: ${{matrix.compiler['cxx']}}
@@ -98,7 +103,7 @@ jobs:
     - name: Bootstrap and Configure
       run: |
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C --enable-coverage --with-boost=/usr/local
+        ./bootstrap-configure -C ${{matrix.compiler['options']}} --with-boost=/usr/local --with-corefoundation-source=cflite
 
     - name: Coding Style
       run: |
@@ -112,7 +117,12 @@ jobs:
       run: |
         make -j check
 
+    # Coverage seems to have a problem on Linux with clang due to an
+    # 'atexit' issue during linking of the test executables. So, skip
+    # it for now.
+
     - name: Upload Coverage
+      if: ${{matrix.compiler['c']}} != 'clang'
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'include/*' -g 'src/*' -G 'tests/*'
 
