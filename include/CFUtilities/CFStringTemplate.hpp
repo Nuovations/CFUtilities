@@ -293,7 +293,7 @@ public:
                         // one, add it to the cache, and return it.
 
                         const CFIndex  lSize = CFStringGetMaximumSizeForEncoding(lLength, inEncoding) + static_cast<CFIndex>(sizeof('\0'));
-                        EncodingBuffer lEncodingBuffer(new char[lSize]);
+                        EncodingBuffer lEncodingBuffer(new char[static_cast<size_t>(lSize)]);
 
                         if (lEncodingBuffer.get() != NULL)
                         {

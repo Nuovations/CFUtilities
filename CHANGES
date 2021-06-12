@@ -1,3 +1,9 @@
+1.1.1 (2021-06-11)
+
+        * Resolved a number of compiler warnings/errors under clang/LLVM.
+
+        * Added support for Linux and [Open] CF-Lite.
+
 1.1 (2021-05-20)
 
         * Added 'GetUTF8String' convenience method.

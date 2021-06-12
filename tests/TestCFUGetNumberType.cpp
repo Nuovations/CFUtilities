@@ -69,8 +69,8 @@ TestCFUGetNumberType :: Test(void)
 void
 TestCFUGetNumberType :: TestSInt8Type(void)
 {
-    int8_t       lInt8;
-    uint8_t      lUint8;
+    int8_t       lInt8  = 0;
+    uint8_t      lUint8 = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lInt8);
@@ -83,8 +83,8 @@ TestCFUGetNumberType :: TestSInt8Type(void)
 void
 TestCFUGetNumberType :: TestSInt16Type(void)
 {
-    int16_t      lInt16;
-    uint16_t     lUint16;
+    int16_t      lInt16  = 0;
+    uint16_t     lUint16 = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lInt16);
@@ -97,8 +97,8 @@ TestCFUGetNumberType :: TestSInt16Type(void)
 void
 TestCFUGetNumberType :: TestSInt32Type(void)
 {
-    int32_t      lInt32;
-    uint32_t     lUint32;
+    int32_t      lInt32  = 0;
+    uint32_t     lUint32 = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lInt32);
@@ -111,8 +111,8 @@ TestCFUGetNumberType :: TestSInt32Type(void)
 void
 TestCFUGetNumberType :: TestSInt64Type(void)
 {
-    int64_t      lInt64;
-    uint64_t     lUint64;
+    int64_t      lInt64  = 0;
+    uint64_t     lUint64 = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lInt64);
@@ -125,7 +125,7 @@ TestCFUGetNumberType :: TestSInt64Type(void)
 void
 TestCFUGetNumberType :: TestSIntFloat32Type(void)
 {
-    float        lFloat;
+    float        lFloat = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lFloat);
@@ -135,7 +135,7 @@ TestCFUGetNumberType :: TestSIntFloat32Type(void)
 void
 TestCFUGetNumberType :: TestSIntFloat64Type(void)
 {
-    double       lDouble;
+    double       lDouble = 0;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lDouble);
@@ -157,10 +157,10 @@ TestCFUGetNumberType :: TestEnum(void)
     enum Enum64 {
         kEnum64Value = INT64_MAX
     };
-    Enum8        lEnum8;
-    Enum16       lEnum16;
-    Enum32       lEnum32;
-    Enum64       lEnum64;
+    Enum8        lEnum8  = kEnum8Value;
+    Enum16       lEnum16 = kEnum16Value;
+    Enum32       lEnum32 = kEnum32Value;
+    Enum64       lEnum64 = kEnum64Value;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lEnum8);
@@ -179,7 +179,7 @@ TestCFUGetNumberType :: TestEnum(void)
 void
 TestCFUGetNumberType :: TestPointer(void)
 {
-    void *       lPointer;
+    void *       lPointer = NULL;
     CFNumberType lResult;
 
     lResult = CFUGetNumberType(lPointer);

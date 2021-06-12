@@ -221,9 +221,9 @@ TestCFUPropertyListWriteToFile :: tearDown(void)
 void
 TestCFUPropertyListWriteToFile :: TestNull(void)
 {
-    const CFPropertyListFormat kFormat   = kCFPropertyListXMLFormat_v1_0;
-    const bool                 kWritable = true;
-    CFPropertyListRef          lPropertyList;
+    const CFPropertyListFormat kFormat       = kCFPropertyListXMLFormat_v1_0;
+    const bool                 kWritable     = true;
+    CFPropertyListRef          lPropertyList = NULL;
     bool                       lStatus;
 
     // NULL-terminated C string path
@@ -285,7 +285,6 @@ TestCFUPropertyListWriteToFile :: TestInvalidCStringFormat(void)
                                          lPropertyList,
                                          &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
@@ -374,7 +373,6 @@ TestCFUPropertyListWriteToFile :: TestInvalidCFStringFormat(void)
                                          lPropertyList,
                                          &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
@@ -441,10 +439,10 @@ TestCFUPropertyListWriteToURL :: tearDown(void)
 void
 TestCFUPropertyListWriteToURL :: TestNull(void)
 {
-    const CFPropertyListFormat kFormat      = kCFPropertyListXMLFormat_v1_0;
-    const bool                 kIsDirectory = true;
-    CFURLRef                   lURLRef      = NULL;
-    CFPropertyListRef          lPropertyList;
+    const CFPropertyListFormat kFormat       = kCFPropertyListXMLFormat_v1_0;
+    const bool                 kIsDirectory  = true;
+    CFURLRef                   lURLRef       = NULL;
+    CFPropertyListRef          lPropertyList = NULL;
     bool                       lStatus;
 
     lURLRef = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
@@ -494,7 +492,6 @@ TestCFUPropertyListWriteToURL :: TestInvalidFormat(void)
                                         lPropertyList,
                                         &lError);
     CPPUNIT_ASSERT(lStatus != true);
-    CPPUNIT_ASSERT(lError == NULL);
 
     if (lError != NULL) {
         CFRelease(lError);
