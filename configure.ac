@@ -315,69 +315,24 @@ AC_ARG_WITH(corefoundation-source,
     ],
     [with_corefoundation_source=auto])
 
-AC_MSG_RESULT(${with_corefoundation_source})
-
-# At this point, the source is one of the allowed values. If it's
-# 'auto' we autodetect it.
+# At this point, the CoreFoundation source is one of the allowed
+# values. If it's 'auto' we autodetect it, based on the target OS.
 
 if test "${with_corefoundation_source}" = "auto"; then
+    case ${target_os} in
 
-    AC_CHECK_FRAMEWORK(CoreFoundation,
-                       [CFAllocatorGetDefault],
-                       [with_corefoundation_source="framework"
-                       LIBS="${LIBS} -framework CoreFoundation"],
-                       AC_CHECK_LIB(CoreFoundation,
-                                    CFAllocatorGetDefault,
-                                    [with_corefoundation_source="cflite"
-                                    LIBS="${LIBS} -lCoreFoundation}"],
-                                    with_corefoundation_source="none",))
+	*darwin*)
+            with_corefoundation_source=framework
+	    ;;
 
-elif test "${with_corefoundation_source}" = "framework"; then
+	*)
+            with_corefoundation_source=cflite
+	    ;;
 
-    AC_CHECK_FRAMEWORK(CoreFoundation,
-                       [CFAllocatorGetDefault],
-                       [LIBS="${LIBS} -framework CoreFoundation"],
-                       with_corefoundation_source="none")
-
-elif test "${with_corefoundation_source}" = "cflite"; then
-
-    AC_CHECK_LIB(CoreFoundation,
-                 CFAllocatorGetDefault,
-                 [LIBS="${LIBS} -lCoreFoundation}"],
-                 with_corefoundation_source="none",)
-
+    esac
 fi
 
-if test "${with_corefoundation_source}" = "none"; then
-
-    AC_MSG_ERROR([Cannot determine a source for CoreFoundation.])
-
-fi
-
-CFUTILITIES_CF_SOURCE=${with_corefoundation_source}
-
-case ${with_corefoundation_source} in
-
-    framework)
-        CFUTILITIES_CF_SOURCE_FRAMEWORK=1
-        ;;
-
-    cflite)
-        CFUTILITIES_CF_SOURCE_CFLITE=1
-        ;;
-
-esac
-
-AC_SUBST(CFUTILITIES_CF_SOURCE)
-AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE],[${CFUTILITIES_CF_SOURCE}],[CoreFoundation source])
-
-AC_SUBST(CFUTILITIES_CF_SOURCE_FRAMEWORK)
-AM_CONDITIONAL([CFUTILITIES_CF_SOURCE_FRAMEWORK], [test "${CFUTILITIES_CF_SOURCE}" = "framework"])
-AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_FRAMEWORK],[${CFUTILITIES_CF_SOURCE_FRAMEWORK}],[Define to 1 if you want to use a system framework implementation source of CoreFoundation for CFUtilities])
-
-AC_SUBST(CFUTILITIES_CF_SOURCE_CFLITE)
-AM_CONDITIONAL([CFUTILITIES_CF_SOURCE_CFLITE], [test "${CFUTILITIES_CF_SOURCE}" = "cflite"])
-AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_CFLITE],[${CFUTILITIES_CF_SOURCE_CFLITE}],[Define to 1 if you want to use an [Open]CFLite implementation source of CoreFoundation for CFUtilities])
+AC_MSG_RESULT(${with_corefoundation_source})
 
 #
 # Checks for libraries and packages.
@@ -387,6 +342,7 @@ AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_CFLITE],[${CFUTILITIES_CF_SOURCE_CFLIT
 #
 #   * Boost
 #   * CppUnit
+#   * [Open]CFLite
 #
 AC_MSG_NOTICE([checking required package dependencies])
 
@@ -447,6 +403,96 @@ if test "${nl_cv_build_tests}" = "yes"; then
 fi
 
 #
+# [Open]CFLite
+#
+
+if test "${with_corefoundation_source}" == "cflite"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CoreFoundation],
+    [CF],
+    [CoreFoundation],
+    [CoreFoundation],
+    [
+        # Check for required CoreFoundation (via [Open]CFLite) headers.
+
+        AC_LANG_PUSH([C])
+
+            AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h],
+                [],
+                [
+                    AC_MSG_ERROR(The CoreFoundation header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
+# At this point, the CoreFoundation source is one of the allowed
+# values and, if [Open]CFLite, we have detected the location of a
+# package providing it. If it's 'auto' we autodetect it.
+
+if test "${with_corefoundation_source}" = "auto"; then
+
+    AC_CHECK_FRAMEWORK(CoreFoundation,
+                       [CFAllocatorGetDefault],
+                       [with_corefoundation_source="framework"
+                       LIBS="${LIBS} -framework CoreFoundation"],
+                       AC_CHECK_LIB(CoreFoundation,
+                                    CFAllocatorGetDefault,
+                                    [with_corefoundation_source="cflite"],
+                                    with_corefoundation_source="none",))
+
+elif test "${with_corefoundation_source}" = "framework"; then
+
+    AC_CHECK_FRAMEWORK(CoreFoundation,
+                       [CFAllocatorGetDefault],
+                       [LIBS="${LIBS} -framework CoreFoundation"],
+                       with_corefoundation_source="none")
+
+elif test "${with_corefoundation_source}" = "cflite"; then
+
+    AC_CHECK_LIB(CoreFoundation,
+                 CFAllocatorGetDefault,
+                 [],
+                 with_corefoundation_source="none",)
+
+fi
+
+if test "${with_corefoundation_source}" = "none"; then
+
+    AC_MSG_ERROR([Cannot determine a source for CoreFoundation.])
+
+fi
+
+CFUTILITIES_CF_SOURCE=${with_corefoundation_source}
+
+case ${with_corefoundation_source} in
+
+    framework)
+        CFUTILITIES_CF_SOURCE_FRAMEWORK=1
+        ;;
+
+    cflite)
+        CFUTILITIES_CF_SOURCE_CFLITE=1
+        ;;
+
+esac
+
+AC_SUBST(CFUTILITIES_CF_SOURCE)
+AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE],[${CFUTILITIES_CF_SOURCE}],[CoreFoundation source])
+
+AC_SUBST(CFUTILITIES_CF_SOURCE_FRAMEWORK)
+AM_CONDITIONAL([CFUTILITIES_CF_SOURCE_FRAMEWORK], [test "${CFUTILITIES_CF_SOURCE}" = "framework"])
+AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_FRAMEWORK],[${CFUTILITIES_CF_SOURCE_FRAMEWORK}],[Define to 1 if you want to use a system framework implementation source of CoreFoundation for CFUtilities])
+
+AC_SUBST(CFUTILITIES_CF_SOURCE_CFLITE)
+AM_CONDITIONAL([CFUTILITIES_CF_SOURCE_CFLITE], [test "${CFUTILITIES_CF_SOURCE}" = "cflite"])
+AC_DEFINE_UNQUOTED([CFUTILITIES_CF_SOURCE_CFLITE],[${CFUTILITIES_CF_SOURCE_CFLITE}],[Define to 1 if you want to use an [Open]CFLite implementation source of CoreFoundation for CFUtilities])
+
+#
 # Checks for library functions
 #
 
@@ -465,6 +511,18 @@ if test "${ac_no_link}" != "yes"; then
     AC_CHECK_FUNCS(CFPropertyListWriteToStream CFPropertyListWrite)
 
 fi
+
+# Add any Boost CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${BOOST_CPPFLAGS}"
+LIBS="${LIBS} ${BOOST_LIBS}"
+LDFLAGS="${LDFLAGS} ${BOOST_LDFLAGS}"
+
+# Add any CoreFoundation CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${CF_CPPFLAGS}"
+LIBS="${LIBS} ${CF_LIBS}"
+LDFLAGS="${LDFLAGS} ${CF_LDFLAGS}"
 
 # Add any code coverage CPPFLAGS and LIBS
 
@@ -543,6 +601,9 @@ AC_MSG_NOTICE([
   Boost compile flags                         : ${BOOST_CPPFLAGS:--}
   Boost link flags                            : ${BOOST_LDFLAGS:--}
   Boost link libraries                        : ${BOOST_LIBS:--}
+  CoreFoundation compile flags                : ${CF_CPPFLAGS:--}
+  CoreFoundation link flags                   : ${CF_LDFLAGS:--}
+  CoreFoundation link libraries               : ${CF_LIBS:--}
   CppUnit compile flags                       : ${CPPUNIT_CPPFLAGS:--}
   CppUnit link flags                          : ${CPPUNIT_LDFLAGS:--}
   CppUnit link libraries                      : ${CPPUNIT_LIBS:--}
