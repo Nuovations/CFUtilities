@@ -30,7 +30,7 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
-    name: "Linux ${{matrix.compiler['name']}}"
+    name: "Linux ${{matrix.compiler['name']}} with ${{matrix.opencflite['name']}}"
 
     # Coverage seems to have a problem on Linux with clang due to an
     # 'atexit' issue during linking of the test executables. So, only
@@ -41,6 +41,9 @@ jobs:
         compiler:
           - { name: GCC,        c: gcc,   cxx: g++,     options: "--enable-coverage" }
           - { name: clang/LLVM, c: clang, cxx: clang++, options: "" }
+        opencflite:
+          - { name: "CoreFoundation 476", ref: opencflite-476 }
+          - { name: "CoreFoundation 635", ref: opencflite-635 }
     env:
       CC: ${{matrix.compiler['c']}}
       CXX: ${{matrix.compiler['cxx']}}
@@ -70,7 +73,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: gerickson/opencflite
-        ref: opencflite-476
+        ref: ${{matrix.opencflite['ref']}}
         path: opencflite
 
     # Note that in Ubuntu 20 and later, with ICU 60 and later, neither
