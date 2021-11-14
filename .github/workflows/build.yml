@@ -93,7 +93,7 @@ jobs:
         make -j
 
     # Make sure that 'ldconfig' is run such that run time execution
-    # picks up libCoreFoundation.so.476 in /usr/local.
+    # picks up libCoreFoundation.so in /usr/local.
 
     - name: Install OpenCFLite Dependency
       run: |
