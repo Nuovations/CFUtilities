@@ -109,7 +109,7 @@ CFUIsTypeID(CFTypeRef inReference, CFTypeID inID)
 {
     bool status = false;
 
-    __Require_Quiet(inReference != NULL, done);
+    __Require_Quiet(inReference != nullptr, done);
 
     status = (CFGetTypeID(inReference) == inID);
 
@@ -125,12 +125,12 @@ done:
  *  object.
  *
  *  @note
- *    In contrast to the @a CFRelease interface, a NULL reference results
+ *    In contrast to the @a CFRelease interface, a null reference results
  *    in no action being taken.
  *
  *  @param[in,out]  inReference  A reference to the CoreFoundation
  *                               object to release. On success, if
- *                               @a inReference is non-NULL, the
+ *                               @a inReference is non-null, the
  *                               reference is released.
  *
  *  @ingroup base
@@ -139,7 +139,7 @@ done:
 void
 CFURelease(CFTypeRef inReference)
 {
-    if (inReference != NULL) {
+    if (inReference != nullptr) {
         CFRelease(inReference);
     }
 }
@@ -221,7 +221,7 @@ CFUDateGetPOSIXTime(CFDateRef inDate)
 {
     time_t tempTime = 0;
 
-    __Require(inDate != NULL, done);
+    __Require(inDate != nullptr, done);
 
     tempTime = CFUAbsoluteTimeGetPOSIXTime(CFDateGetAbsoluteTime(inDate));
 
@@ -238,7 +238,7 @@ done:
  *  @param[in]  inTime       The POSIX time to convert.
  *
  *  @returns
- *    A reference to a CoreFoundation date object if OK; otherwise, NULL.
+ *    A reference to a CoreFoundation date object if OK; otherwise, null.
  *
  *  @ingroup date-time
  *
@@ -258,7 +258,7 @@ CFUDateCreate(CFAllocatorRef inAllocator, time_t inTime)
  *
  *  @returns
  *    A reference to an array containing the keys on success;
- *    otherwise, NULL on error.
+ *    otherwise, null on error.
  *
  *  @ingroup dictionary
  *
@@ -268,15 +268,15 @@ CFUDictionaryCopyKeys(CFDictionaryRef inDictionary)
 {
     CFIndex              numKeys;
     vector<const void *> theKeys;
-    CFArrayRef           arrayRef = NULL;
+    CFArrayRef           arrayRef = nullptr;
 
-    __Require(inDictionary != NULL, done);
+    __Require(inDictionary != nullptr, done);
 
     numKeys = CFDictionaryGetCount(inDictionary);
 
     theKeys.reserve(static_cast<size_t>(numKeys));
 
-    CFDictionaryGetKeysAndValues(inDictionary, &theKeys[0], NULL);
+    CFDictionaryGetKeysAndValues(inDictionary, &theKeys[0], nullptr);
 
     arrayRef = CFArrayCreate(kCFAllocatorDefault,
                              &theKeys[0],
@@ -308,11 +308,11 @@ CFUDictionaryMergeApplier(const void * inKey,
                           const void * inValue,
                           void *       inContext)
 {
-    CFUDictionaryMergeContext * theContext = NULL;
+    CFUDictionaryMergeContext * theContext = nullptr;
     bool                        hasKey;
 
-    __Require(inKey != NULL, done);
-    __Require(inContext != NULL, done);
+    __Require(inKey != nullptr, done);
+    __Require(inContext != nullptr, done);
 
     theContext = static_cast<CFUDictionaryMergeContext *>(inContext);
 
@@ -372,8 +372,8 @@ CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
 {
     CFUDictionaryMergeContext theContext = { inDestination, inReplace };
 
-    __Require(inDestination != NULL, done);
-    __Require(inSource != NULL, done);
+    __Require(inDestination != nullptr, done);
+    __Require(inSource != nullptr, done);
 
     CFDictionaryApplyFunction(inSource, CFUDictionaryMergeApplier, &theContext);
 
@@ -453,12 +453,12 @@ CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
                         Boolean &       outValue)
 {
     bool         status      = false;
-    CFBooleanRef tempBoolean = NULL;
+    CFBooleanRef tempBoolean = nullptr;
 
     // Sanity check the input parameters.
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
 
     // Attempt to get the value from the dictionary.
 
@@ -468,7 +468,7 @@ CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
     // The key being absent is a quiet failure; whereas, the value not
     // being of type Boolean is.
 
-    __Require_Quiet(tempBoolean != NULL, done);
+    __Require_Quiet(tempBoolean != nullptr, done);
     __Require(CFUIsTypeID(tempBoolean, CFBooleanGetTypeID()), done);
 
     outValue = CFBooleanGetValue(tempBoolean);
@@ -511,8 +511,8 @@ CFUDictionarySetBoolean(CFMutableDictionaryRef inDictionary,
 {
     bool status = false;
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
 
     CFDictionarySetValue(inDictionary,
                          inKey,
@@ -526,23 +526,23 @@ done:
 
 /**
  *  @brief
- *    Add a NULL-termited C string to a dictionary.
+ *    Add a null-termited C string to a dictionary.
 
- *  This routine sets the specified NULL-terminated C string value, as
+ *  This routine sets the specified null-terminated C string value, as
  *  a CFString, in the provided dictionary associated with the
  *  specified key.
  *
  *  @param[in,out]  inDictionary  A reference to the CoreFoundation
  *                                dictionary to set the
- *                                NULL-terminated C string in. On
+ *                                null-terminated C string in. On
  *                                success, the dictionary is modified
  *                                with a reference to the CFString
  *                                value equivalent to the
- *                                NULL-terminated C string set.
+ *                                null-terminated C string set.
  *  @param[in]      inKey         A pointer to the key with which to
- *                                associate the NULL-terminated C
+ *                                associate the null-terminated C
  *                                string in the dictionary.
- *  @param[in]      inString      The NULL-terminated C string value to set.
+ *  @param[in]      inString      The null-terminated C string value to set.
  *
  *  @returns
  *    True if the value was successfully set; otherwise, false.
@@ -556,16 +556,16 @@ CFUDictionarySetCString(CFMutableDictionaryRef inDictionary,
                         const char *           inString)
 {
     bool        status     = false;
-    CFStringRef tempString = NULL;
+    CFStringRef tempString = nullptr;
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
-    __Require(inString != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
+    __Require(inString != nullptr, done);
 
     tempString = CFStringCreateWithCString(kCFAllocatorDefault,
                                            inString,
                                            CFStringGetSystemEncoding());
-    __Require(tempString != NULL, done);
+    __Require(tempString != nullptr, done);
 
     CFDictionarySetValue(inDictionary, inKey, tempString);
 
@@ -664,18 +664,18 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                            CFStringRef *       outError)
 {
     bool                 status    = false;
-    CFReadStreamRef      theStream = NULL;
+    CFReadStreamRef      theStream = nullptr;
     CFStreamStatus       streamStatus;
     CFPropertyListFormat theFormat;
 
-    __Require(inURL != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inURL != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation read file stream from the
     // resulting URL.
 
     theStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, inURL);
-    __Require(theStream != NULL, done);
+    __Require(theStream != nullptr, done);
 
     // Attempt to open the stream.
 
@@ -694,7 +694,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
 
 #if HAVE_CFPROPERTYLISTCREATEWITHSTREAM
     {
-        CFErrorRef theError = NULL;
+        CFErrorRef theError = nullptr;
 
         *outPlist = CFPropertyListCreateWithStream(kCFAllocatorDefault,
                                                    theStream,
@@ -703,15 +703,15 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                                                    &theFormat,
                                                    &theError);
 
-        if (theError != NULL) {
-            if (outError != NULL) {
+        if (theError != nullptr) {
+            if (outError != nullptr) {
                 *outError = CFErrorCopyDescription(theError);
             }
 
             CFRelease(theError);
         }
 
-        __Require_Action(*outPlist != NULL, done, status = false);
+        __Require_Action(*outPlist != nullptr, done, status = false);
     }
 #elif HAVE_CFPROPERTYLISTCREATEFROMSTREAM
     *outPlist = CFPropertyListCreateFromStream(kCFAllocatorDefault,
@@ -720,7 +720,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                                                inMutability,
                                                &theFormat,
                                                outError);
-    __Require_Action(*outPlist != NULL, done, status = false);
+    __Require_Action(*outPlist != nullptr, done, status = false);
 #else // !HAVE_CFPROPERTYLISTCREATEWITHSTREAM || !HAVE_CFPROPERTYLISTCREATEFROMSTREAM
 #error "One of 'CFPropertyListCreateWithStream' or 'CFPropertyListCreateFromStream' must be available."
 #endif // HAVE_CFPROPERTYLISTCREATEWITHSTREAM
@@ -731,7 +731,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
     status = true;
 
 done:
-    if (theStream != NULL) {
+    if (theStream != nullptr) {
         CFReadStreamClose(theStream);
     }
 
@@ -771,18 +771,18 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
                           CFStringRef *        outError)
 {
     bool             status    = false;
-    CFWriteStreamRef theStream = NULL;
+    CFWriteStreamRef theStream = nullptr;
     CFStreamStatus   streamStatus;
     CFIndex          theIndex;
 
-    __Require(inURL != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inURL != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation write file stream from the
     // specified URL.
 
     theStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, inURL);
-    __Require(theStream != NULL, done);
+    __Require(theStream != nullptr, done);
 
     // Attempt to open the stream.
 
@@ -796,7 +796,7 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
 
 #if HAVE_CFPROPERTYLISTWRITE
     {
-        CFErrorRef theError = NULL;
+        CFErrorRef theError = nullptr;
 
         theIndex = CFPropertyListWrite(inPlist,
                                        theStream,
@@ -804,8 +804,8 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
                                        0,
                                        &theError);
 
-        if (theError != NULL) {
-            if (outError != NULL) {
+        if (theError != nullptr) {
+            if (outError != nullptr) {
                 *outError = CFErrorCopyDescription(theError);
             }
 
@@ -830,7 +830,7 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
     status = true;
 
 done:
-    if (theStream != NULL) {
+    if (theStream != nullptr) {
         CFWriteStreamClose(theStream);
     }
 
@@ -879,10 +879,10 @@ CFUPropertyListReadFromFile(CFStringRef         inPath,
 {
     bool     kIsDirectory = true;
     bool     status       = false;
-    CFURLRef theURL       = NULL;
+    CFURLRef theURL       = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation URL for the specified file
     // path.
@@ -891,7 +891,7 @@ CFUPropertyListReadFromFile(CFStringRef         inPath,
                                            inPath,
                                            kCFURLPOSIXPathStyle,
                                            !kIsDirectory);
-    __Require(theURL != NULL, done);
+    __Require(theURL != nullptr, done);
 
     // Attempt to read the property list from the URL.
 
@@ -943,10 +943,10 @@ CFUPropertyListWriteToFile(CFStringRef          inPath,
 {
     bool     kIsDirectory = true;
     bool     status       = false;
-    CFURLRef theURL       = NULL;
+    CFURLRef theURL       = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation URL for the specified file
     // path.
@@ -955,7 +955,7 @@ CFUPropertyListWriteToFile(CFStringRef          inPath,
                                            inPath,
                                            kCFURLPOSIXPathStyle,
                                            !kIsDirectory);
-    __Require(theURL != NULL, done);
+    __Require(theURL != nullptr, done);
 
     // Attempt to write the property list to the URL.
 
@@ -1007,17 +1007,17 @@ CFUPropertyListReadFromFile(const char *        inPath,
                             CFStringRef *       outError)
 {
     bool        status  = false;
-    CFStringRef thePath = NULL;
+    CFStringRef thePath = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Convert the provided path name to a CoreFoundation string.
 
     thePath = CFStringCreateWithCString(kCFAllocatorDefault,
                                         inPath,
                                         CFStringGetSystemEncoding());
-    __Require(thePath != NULL, done);
+    __Require(thePath != nullptr, done);
 
     // Attempt to read the property list from the file at the
     // specified path.
@@ -1071,21 +1071,21 @@ CFUPropertyListWriteToFile(const char *         inPath,
                            CFStringRef *        outError)
 {
     int          error;
-    CFStringRef  thePath     = NULL;
+    CFStringRef  thePath     = nullptr;
     const mode_t kReadAll    = (S_IRUSR | S_IRGRP | S_IROTH);
     const mode_t kWriteAll   = (S_IWUSR | S_IWGRP | S_IWOTH);
     const mode_t permissions = inWritable ? (kReadAll | kWriteAll) : kReadAll;
     bool         status      = false;
 
-    __Require(inPath != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Convert the provided path name to a CoreFoundation string.
 
     thePath = CFStringCreateWithCString(kCFAllocatorDefault,
                                         inPath,
                                         CFStringGetSystemEncoding());
-    __Require(thePath != NULL, done);
+    __Require(thePath != nullptr, done);
 
     // Attempt to write the property list to the file at the specified
     // path.
@@ -1117,7 +1117,7 @@ done:
  *
  *  @returns
  *    True if the set is the empty set or the specified reference is
- *    NULL; otherwise, false.
+ *    null; otherwise, false.
  *
  *  @ingroup set
  *
@@ -1125,7 +1125,7 @@ done:
 bool
 CFUSetIsEmptySet(CFSetRef inSet)
 {
-    return ((inSet == NULL) ? true : (CFSetGetCount(inSet) == 0));
+    return ((inSet == nullptr) ? true : (CFSetGetCount(inSet) == 0));
 }
 
 /**
@@ -1179,7 +1179,7 @@ CFUSetIntersectionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 {
     CFUSetContext theContext = { inDestinationSet, inSourceSet };
 
-    if (inDestinationSet != NULL && inSourceSet != NULL) {
+    if (inDestinationSet != nullptr && inSourceSet != nullptr) {
         CFSetApplyFunction(inDestinationSet,
                            CFUSetIntersectionApplier,
                            &theContext);
@@ -1236,7 +1236,7 @@ CFUSetUnionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 {
     CFUSetContext theContext = { inDestinationSet, inSourceSet };
 
-    if (inDestinationSet != NULL && inSourceSet != NULL) {
+    if (inDestinationSet != nullptr && inSourceSet != nullptr) {
         CFSetApplyFunction(inSourceSet, CFUSetUnionApplier, &theContext);
     }
 
@@ -1258,7 +1258,7 @@ CFUSetUnionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 void
 CFUTreeContextInit(CFTreeContext * inContext)
 {
-    if (inContext != NULL) {
+    if (inContext != nullptr) {
         *inContext = kCFUTreeContextInitializer;
     }
 }
@@ -1275,7 +1275,7 @@ CFUTreeContextInit(CFTreeContext * inContext)
  *                          by one.
  *
  *  @returns
- *    A reference to the newly-created tree if OK; otherwise, NULL on
+ *    A reference to the newly-created tree if OK; otherwise, null on
  *    error.
  *
  *  @ingroup tree
@@ -1284,7 +1284,7 @@ CFUTreeContextInit(CFTreeContext * inContext)
 CFTreeRef
 CFUTreeCreate(CFTypeRef inType)
 {
-    CFTreeRef     tempTree = NULL;
+    CFTreeRef     tempTree = nullptr;
     CFTreeContext theContext;
 
     CFUTreeContextInit(&theContext);
@@ -1295,7 +1295,7 @@ CFUTreeCreate(CFTypeRef inType)
     theContext.copyDescription = CFCopyDescription;
 
     tempTree = CFTreeCreate(kCFAllocatorDefault, &theContext);
-    __Require(tempTree != NULL, done);
+    __Require(tempTree != nullptr, done);
 
 done:
     return (tempTree);
@@ -1320,7 +1320,7 @@ CFUStringsMatch(CFStringRef aFirst, CFStringRef aSecond)
     CFComparisonResult comparison;
     bool               match = false;
 
-    if ((aFirst != NULL) && (aSecond != NULL)) {
+    if ((aFirst != nullptr) && (aSecond != nullptr)) {
         comparison = CFStringCompare(aFirst, aSecond, 0);
 
         match = (comparison == kCFCompareEqualTo);
