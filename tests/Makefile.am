@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2021 Nuovation System Designs, LLC. All Rights Reserved.
+#    Copyright (c) 2021-2023 Nuovation System Designs, LLC. All Rights Reserved.
 #    Copyright 2016 Nest Labs Inc. All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +60,7 @@ check_PROGRAMS                          = \
     TestCFUDateCreate                     \
     TestCFUDateGetPOSIXTime               \
     TestCFUDictionaryCopyKeys             \
+    TestCFUDictionaryDifference           \
     TestCFUDictionaryMerge                \
     TestCFUDictionaryGetBoolean           \
     TestCFUDictionarySetBoolean           \
@@ -117,6 +118,10 @@ TestCFUDateCreate_SOURCES               = TestDriver.cpp                      \
 TestCFUDictionaryCopyKeys_LDADD         = $(COMMON_LDADD)
 TestCFUDictionaryCopyKeys_SOURCES       = TestDriver.cpp                      \
                                           TestCFUDictionaryCopyKeys.cpp
+
+TestCFUDictionaryDifference_LDADD       = $(COMMON_LDADD)
+TestCFUDictionaryDifference_SOURCES     = TestDriver.cpp                      \
+                                          TestCFUDictionaryDifference.cpp
 
 TestCFUDictionaryMerge_LDADD            = $(COMMON_LDADD)
 TestCFUDictionaryMerge_SOURCES          = TestDriver.cpp                      \
