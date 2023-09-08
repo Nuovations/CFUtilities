@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2008-2021 Nuovation System Designs, LLC
+ *    Copyright (c) 2008-2023 Nuovation System Designs, LLC
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,60 @@ using namespace std;
  */
 
 /**
- * Iterator context for the dictionary merge interface.
+ *  Indicator of the phase of the dictionary difference algorithm.
+ *
+ *  @private
+ *
+ */
+enum CFUDictionaryDifferencePhase
+{
+    kCFUDictionaryDifferencePhaseAdd,     //!< The algorithm is determining
+                                          //!< those entries unique to the
+                                          //!< proposed dictionary.
+    kCFUDictionaryDifferencePhaseCommon,  //!< The algorithm is determining
+                                          //!< those entries in common to both
+                                          //!< dictionaries.
+    kCFUDictionaryDifferencePhaseRemove   //!< The algorithm is determining
+                                          //!< those entries unique to the
+                                          //!< base dictionary.
+};
+
+/**
+ *  Iterator context for the dictionary difference interface.
+ *
+ *  @private
+ *
+ */
+struct CFUDictionaryDifferenceContext {
+    // clang-format off
+    CFUDictionaryDifferencePhase  mPhase;    //!< The current difference
+                                             //!< algorithm phase.
+    CFDictionaryRef               mProposed; //!< A reference to the
+                                             //!< dictionary serving as the
+                                             //!< focus of the difference.
+    CFDictionaryRef               mBase;     //!< A reference to the
+                                             //!< dictionary serving as the
+                                             //!< base of the difference.
+    CFMutableDictionaryRef        mAdded;    //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries unique to the
+                                             //!< proposed dictionary.
+    CFMutableDictionaryRef        mCommon;   //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries common to both the
+                                             //!< base and current dictionary
+                                             //!< but that may be changed
+                                             //!< between them in terms of
+                                             //!< values.
+    CFMutableDictionaryRef        mRemoved;  //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries unique to the
+                                             //!< base dictionary.
+    // clang-format on
+};
+
+/**
+ *  Iterator context for the dictionary merge interface.
  *
  * @private
  */
@@ -574,6 +627,334 @@ CFUDictionarySetCString(CFMutableDictionaryRef inDictionary,
 done:
     CFURelease(tempString);
 
+    return (status);
+}
+
+/**
+ *  This routine is a CoreFoundation dictionary applier function
+ *  that iterates on each key/value pair of a base or proposed
+ *  dictionary and determines whether each entry is unique or common
+ *  to the other.
+ *
+ *  @param[in]      inKey      A pointer to the key of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in]      inValue    A pointer to the value of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in,out]  inContext  A pointer to the iterator context. On
+ *                             completion and depending on the context
+ *                             phase, the context's added dictionary,
+ *                             if present, will contain entries unique
+ *                             to the proposed dictionary; the
+ *                             context's removed dictionary, if
+ *                             present, will contain entries unique to
+ *                             the base dictionary; and the context's
+ *                             common dictionary, if present, will
+ *                             contain entries common to both the base
+ *                             and proposed dictionaries but for which
+ *                             may have different values for their
+ *                             keys.
+ *
+ *  @private
+ *
+ */
+static void
+CFUDictionaryDifferenceApplier(const void *inKey,
+                               const void *inValue,
+                               void *inContext)
+{
+    CFStringRef                       theKey     = static_cast<CFStringRef>(inKey);
+    CFDictionaryRef                   theValue   = static_cast<CFDictionaryRef>(inValue);
+    CFUDictionaryDifferenceContext *  theContext = static_cast<CFUDictionaryDifferenceContext *>(inContext);
+
+    __Require(theKey != nullptr,     done);
+    __Require(theValue != nullptr,   done);
+    __Require(theContext != nullptr, done);
+
+    if (theContext->mPhase == kCFUDictionaryDifferencePhaseAdd)
+    {
+        const bool theDictionaryHasKey = CFDictionaryContainsKey(theContext->mBase, theKey);
+
+        if (!theDictionaryHasKey)
+        {
+            if (theContext->mAdded != nullptr)
+            {
+                CFDictionarySetValue(theContext->mAdded, theKey, theValue);
+            }
+        }
+        else
+        {
+            if (theContext->mCommon != nullptr)
+            {
+                CFDictionarySetValue(theContext->mCommon, theKey, theValue);
+            }
+        }
+    }
+    else if (theContext->mPhase == kCFUDictionaryDifferencePhaseRemove)
+    {
+        const bool theDictionaryHasKey = CFDictionaryContainsKey(theContext->mProposed, theKey);
+
+        if (!theDictionaryHasKey)
+        {
+            if (theContext->mRemoved != nullptr)
+            {
+                CFDictionarySetValue(theContext->mRemoved, theKey, theValue);
+            }
+        }
+        else
+        {
+            if (theContext->mCommon != nullptr)
+            {
+                CFDictionarySetValue(theContext->mCommon, theKey, theValue);
+            }
+        }
+    }
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Initialize a CoreFoundation dictionary difference context.
+ *
+ *  This intializes a CoreFoundation dictionary difference context for
+ *  a #CFUDictionaryDifference call.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   An reference to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outContext  A reference to the context to be
+ *                              intialized.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if memory allocation was unsuccessful.
+ *
+ *  @private
+ *
+ */
+static Boolean
+CFUDictionaryDifferenceContextSetup(CFDictionaryRef inProposed,
+                                    CFMutableDictionaryRef &inOutBase,
+                                    CFMutableDictionaryRef outAdded,
+                                    CFMutableDictionaryRef outCommon,
+                                    CFMutableDictionaryRef outRemoved,
+                                    CFUDictionaryDifferenceContext &outContext)
+{
+    Boolean status = true;
+
+    if (inOutBase == nullptr)
+    {
+        CFMutableDictionaryRef theTemporaryDictionary = nullptr;
+
+        theTemporaryDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                           0,
+                                                           &kCFTypeDictionaryKeyCallBacks,
+                                                           &kCFTypeDictionaryValueCallBacks);
+        __Require_Action(theTemporaryDictionary != nullptr,
+                         done,
+                         status = false);
+
+        CFUReferenceSet(inOutBase, theTemporaryDictionary);
+
+        CFURelease(theTemporaryDictionary);
+    }
+
+    // Setup the difference context based on the provided dictionary
+    // arguments.
+
+    outContext.mProposed = inProposed;
+    outContext.mBase     = inOutBase;
+    outContext.mAdded    = outAdded;
+    outContext.mCommon   = outCommon;
+    outContext.mRemoved  = outRemoved;
+
+ done:
+    return (status);
+
+}
+
+/**
+ *  @brief
+ *    Apply a difference between the proposed and base dictionaries.
+ *
+ *  The attempts to apply a difference between the proposed and base
+ *  dictionaries, returning, if requested by virtue of non-null
+ *  mutable dictionary references, the entries between the proposed
+ *  and base dictionaries that are unique to the proposed (that is,
+ *  added relative to the base), unique to the proposed (that is,
+ *  removed relative to the base), and common between them, though
+ *  with potentially different values between the base and proposed in
+ *  such case, the common dictionary will contain the base value.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   An reference to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied or if
+ *    memory allocation was unsuccessful.
+ *
+ */
+Boolean
+CFUDictionaryDifference(CFDictionaryRef inProposed,
+                        CFMutableDictionaryRef &inOutBase,
+                        CFMutableDictionaryRef outAdded,
+                        CFMutableDictionaryRef outCommon,
+                        CFMutableDictionaryRef outRemoved)
+{
+    CFUDictionaryDifferenceContext theContext;
+    Boolean                        status = true;
+
+    __Require_Action(inProposed != nullptr, done, status = false);
+
+    // Setup the difference context.
+
+    status = CFUDictionaryDifferenceContextSetup(inProposed,
+                                                 inOutBase,
+                                                 outAdded,
+                                                 outCommon,
+                                                 outRemoved,
+                                                 theContext);
+    __Require(status, done);
+    __Require(inOutBase != nullptr, done);
+
+    // Generate the dictionary unique to the proposed dictionary by
+    // iterating over the proposed dictionary, representing "what is".
+
+    theContext.mPhase   = kCFUDictionaryDifferencePhaseAdd;
+
+    CFDictionaryApplyFunction(inProposed,
+                              CFUDictionaryDifferenceApplier,
+                              &theContext);
+
+    // Generate the dictionary unique to the base dictionary by
+    // iterating over the base dictionary, representing "what was".
+
+    theContext.mPhase   = kCFUDictionaryDifferencePhaseRemove;
+
+    CFDictionaryApplyFunction(inOutBase,
+                              CFUDictionaryDifferenceApplier,
+                              &theContext);
+
+ done:
+    return (status);
+}
+
+/**
+ *  @brief
+ *    Apply a difference between the proposed and base dictionaries.
+ *
+ *  The attempts to apply a difference between the proposed and base
+ *  dictionaries, returning, if requested by virtue of non-null
+ *  mutable dictionary references, the entries between the proposed
+ *  and base dictionaries that are unique to the proposed (that is,
+ *  added relative to the base), unique to the proposed (that is,
+ *  removed relative to the base), and common between them, though
+ *  with potentially different values between the base and proposed in
+ *  such case, the common dictionary will contain the base value.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   A pointer to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied or if
+ *    memory allocation was unsuccessful.
+ *
+ */
+Boolean
+CFUDictionaryDifference(CFDictionaryRef inProposed,
+                        CFMutableDictionaryRef *inOutBase,
+                        CFMutableDictionaryRef outAdded,
+                        CFMutableDictionaryRef outCommon,
+                        CFMutableDictionaryRef outRemoved)
+{
+    Boolean status = true;
+
+    __Require_Action(inOutBase != nullptr, done, status = false);
+
+    status = CFUDictionaryDifference(inProposed,
+                                     *inOutBase,
+                                     outAdded,
+                                     outCommon,
+                                     outRemoved);
+
+ done:
     return (status);
 }
 
