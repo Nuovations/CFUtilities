@@ -40,7 +40,7 @@
 using namespace std;
 
 
-/* Type Definitions */
+// MARK: Type Definitions
 
 /*
  * NOTE: Regrettably, clang-format is disabled below since
@@ -84,7 +84,7 @@ struct CFUSetContext {
     // clang-format on
 };
 
-/* Global Variables */
+// MARK: Global Variables
 
 static const CFTreeContext kCFUTreeContextInitializer = { 0, 0, 0, 0, 0 };
 
