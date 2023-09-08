@@ -169,10 +169,10 @@ TestCFUDictionaryMerge :: TestNonNullNoIntersection(const bool & aReplace)
     // Confirm, post merge, the destination and source counts.
 
     lDictionaryCount = CFDictionaryGetCount(lMutableDictionaryRef);
-    CPPUNIT_ASSERT(lDictionaryCount = (kDestinationKeyCount + kSourceKeyCount));
+    CPPUNIT_ASSERT(lDictionaryCount == (kDestinationKeyCount + kSourceKeyCount));
 
     lDictionaryCount = CFDictionaryGetCount(lDictionaryRef);
-    CPPUNIT_ASSERT(lDictionaryCount = kSourceKeyCount);
+    CPPUNIT_ASSERT(lDictionaryCount == kSourceKeyCount);
 
     // Confirm the contents of the destination dictionary.
 
@@ -307,10 +307,10 @@ TestCFUDictionaryMerge :: TestNonNullIntersection(const bool & aReplace)
     // Confirm, post merge, the destination and source counts.
 
     lDictionaryCount = CFDictionaryGetCount(lMutableDictionaryRef);
-    CPPUNIT_ASSERT(lDictionaryCount = kFinalKeyCount);
+    CPPUNIT_ASSERT(lDictionaryCount == kFinalKeyCount);
 
     lDictionaryCount = CFDictionaryGetCount(lDictionaryRef);
-    CPPUNIT_ASSERT(lDictionaryCount = kSourceKeyCount);
+    CPPUNIT_ASSERT(lDictionaryCount == kSourceKeyCount);
 
     // Confirm the contents of the destination dictionary.
 
