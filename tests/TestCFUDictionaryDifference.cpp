@@ -90,7 +90,7 @@ TestCFUDictionaryDifference :: TestNull(void)
     CFMutableDictionaryRef lBaseDictionaryRef     = nullptr;
     CFMutableDictionaryRef lAddedDictionaryRef    = nullptr;
     CFMutableDictionaryRef lCommonDictionaryRef   = nullptr;
-    CFMutableDictionaryRef lRemovedDictionaryRef  = nullptr;   
+    CFMutableDictionaryRef lRemovedDictionaryRef  = nullptr;
     Boolean                lStatus;
 
     // Allocate the added, common, and removed dictionaries
@@ -1461,7 +1461,7 @@ TestCFUDictionaryDifference :: TestDictionaryKeysAndValues(CFDictionaryRef inDic
                                                            const size_t &inExpectedCount)
 {
     CFIndex lDictionaryCount;
-    
+
     CPPUNIT_ASSERT(inDictionary != nullptr);
 
     lDictionaryCount = CFDictionaryGetCount(inDictionary);
