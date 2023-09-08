@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2008-2021 Nuovation System Designs, LLC
+ *    Copyright (c) 2008-2023 Nuovation System Designs, LLC
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@
 using namespace std;
 
 
-/* Type Definitions */
+// MARK: Type Definitions
 
 /*
  * NOTE: Regrettably, clang-format is disabled below since
@@ -49,7 +49,60 @@ using namespace std;
  */
 
 /**
- * Iterator context for the dictionary merge interface.
+ *  Indicator of the phase of the dictionary difference algorithm.
+ *
+ *  @private
+ *
+ */
+enum CFUDictionaryDifferencePhase
+{
+    kCFUDictionaryDifferencePhaseAdd,     //!< The algorithm is determining
+                                          //!< those entries unique to the
+                                          //!< proposed dictionary.
+    kCFUDictionaryDifferencePhaseCommon,  //!< The algorithm is determining
+                                          //!< those entries in common to both
+                                          //!< dictionaries.
+    kCFUDictionaryDifferencePhaseRemove   //!< The algorithm is determining
+                                          //!< those entries unique to the
+                                          //!< base dictionary.
+};
+
+/**
+ *  Iterator context for the dictionary difference interface.
+ *
+ *  @private
+ *
+ */
+struct CFUDictionaryDifferenceContext {
+    // clang-format off
+    CFUDictionaryDifferencePhase  mPhase;    //!< The current difference
+                                             //!< algorithm phase.
+    CFDictionaryRef               mProposed; //!< A reference to the
+                                             //!< dictionary serving as the
+                                             //!< focus of the difference.
+    CFDictionaryRef               mBase;     //!< A reference to the
+                                             //!< dictionary serving as the
+                                             //!< base of the difference.
+    CFMutableDictionaryRef        mAdded;    //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries unique to the
+                                             //!< proposed dictionary.
+    CFMutableDictionaryRef        mCommon;   //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries common to both the
+                                             //!< base and current dictionary
+                                             //!< but that may be changed
+                                             //!< between them in terms of
+                                             //!< values.
+    CFMutableDictionaryRef        mRemoved;  //!< A reference to the mutable
+                                             //!< dictionary containing
+                                             //!< entries unique to the
+                                             //!< base dictionary.
+    // clang-format on
+};
+
+/**
+ *  Iterator context for the dictionary merge interface.
  *
  * @private
  */
@@ -84,7 +137,7 @@ struct CFUSetContext {
     // clang-format on
 };
 
-/* Global Variables */
+// MARK: Global Variables
 
 static const CFTreeContext kCFUTreeContextInitializer = { 0, 0, 0, 0, 0 };
 
@@ -109,7 +162,7 @@ CFUIsTypeID(CFTypeRef inReference, CFTypeID inID)
 {
     bool status = false;
 
-    __Require_Quiet(inReference != NULL, done);
+    __Require_Quiet(inReference != nullptr, done);
 
     status = (CFGetTypeID(inReference) == inID);
 
@@ -125,12 +178,12 @@ done:
  *  object.
  *
  *  @note
- *    In contrast to the @a CFRelease interface, a NULL reference results
+ *    In contrast to the @a CFRelease interface, a null reference results
  *    in no action being taken.
  *
  *  @param[in,out]  inReference  A reference to the CoreFoundation
  *                               object to release. On success, if
- *                               @a inReference is non-NULL, the
+ *                               @a inReference is non-null, the
  *                               reference is released.
  *
  *  @ingroup base
@@ -139,7 +192,7 @@ done:
 void
 CFURelease(CFTypeRef inReference)
 {
-    if (inReference != NULL) {
+    if (inReference != nullptr) {
         CFRelease(inReference);
     }
 }
@@ -221,7 +274,7 @@ CFUDateGetPOSIXTime(CFDateRef inDate)
 {
     time_t tempTime = 0;
 
-    __Require(inDate != NULL, done);
+    __Require(inDate != nullptr, done);
 
     tempTime = CFUAbsoluteTimeGetPOSIXTime(CFDateGetAbsoluteTime(inDate));
 
@@ -238,7 +291,7 @@ done:
  *  @param[in]  inTime       The POSIX time to convert.
  *
  *  @returns
- *    A reference to a CoreFoundation date object if OK; otherwise, NULL.
+ *    A reference to a CoreFoundation date object if OK; otherwise, null.
  *
  *  @ingroup date-time
  *
@@ -258,7 +311,7 @@ CFUDateCreate(CFAllocatorRef inAllocator, time_t inTime)
  *
  *  @returns
  *    A reference to an array containing the keys on success;
- *    otherwise, NULL on error.
+ *    otherwise, null on error.
  *
  *  @ingroup dictionary
  *
@@ -268,15 +321,15 @@ CFUDictionaryCopyKeys(CFDictionaryRef inDictionary)
 {
     CFIndex              numKeys;
     vector<const void *> theKeys;
-    CFArrayRef           arrayRef = NULL;
+    CFArrayRef           arrayRef = nullptr;
 
-    __Require(inDictionary != NULL, done);
+    __Require(inDictionary != nullptr, done);
 
     numKeys = CFDictionaryGetCount(inDictionary);
 
     theKeys.reserve(static_cast<size_t>(numKeys));
 
-    CFDictionaryGetKeysAndValues(inDictionary, &theKeys[0], NULL);
+    CFDictionaryGetKeysAndValues(inDictionary, &theKeys[0], nullptr);
 
     arrayRef = CFArrayCreate(kCFAllocatorDefault,
                              &theKeys[0],
@@ -308,11 +361,11 @@ CFUDictionaryMergeApplier(const void * inKey,
                           const void * inValue,
                           void *       inContext)
 {
-    CFUDictionaryMergeContext * theContext = NULL;
+    CFUDictionaryMergeContext * theContext = nullptr;
     bool                        hasKey;
 
-    __Require(inKey != NULL, done);
-    __Require(inContext != NULL, done);
+    __Require(inKey != nullptr, done);
+    __Require(inContext != nullptr, done);
 
     theContext = static_cast<CFUDictionaryMergeContext *>(inContext);
 
@@ -372,8 +425,8 @@ CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
 {
     CFUDictionaryMergeContext theContext = { inDestination, inReplace };
 
-    __Require(inDestination != NULL, done);
-    __Require(inSource != NULL, done);
+    __Require(inDestination != nullptr, done);
+    __Require(inSource != nullptr, done);
 
     CFDictionaryApplyFunction(inSource, CFUDictionaryMergeApplier, &theContext);
 
@@ -453,12 +506,12 @@ CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
                         Boolean &       outValue)
 {
     bool         status      = false;
-    CFBooleanRef tempBoolean = NULL;
+    CFBooleanRef tempBoolean = nullptr;
 
     // Sanity check the input parameters.
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
 
     // Attempt to get the value from the dictionary.
 
@@ -468,7 +521,7 @@ CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
     // The key being absent is a quiet failure; whereas, the value not
     // being of type Boolean is.
 
-    __Require_Quiet(tempBoolean != NULL, done);
+    __Require_Quiet(tempBoolean != nullptr, done);
     __Require(CFUIsTypeID(tempBoolean, CFBooleanGetTypeID()), done);
 
     outValue = CFBooleanGetValue(tempBoolean);
@@ -511,8 +564,8 @@ CFUDictionarySetBoolean(CFMutableDictionaryRef inDictionary,
 {
     bool status = false;
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
 
     CFDictionarySetValue(inDictionary,
                          inKey,
@@ -526,23 +579,23 @@ done:
 
 /**
  *  @brief
- *    Add a NULL-termited C string to a dictionary.
+ *    Add a null-termited C string to a dictionary.
 
- *  This routine sets the specified NULL-terminated C string value, as
+ *  This routine sets the specified null-terminated C string value, as
  *  a CFString, in the provided dictionary associated with the
  *  specified key.
  *
  *  @param[in,out]  inDictionary  A reference to the CoreFoundation
  *                                dictionary to set the
- *                                NULL-terminated C string in. On
+ *                                null-terminated C string in. On
  *                                success, the dictionary is modified
  *                                with a reference to the CFString
  *                                value equivalent to the
- *                                NULL-terminated C string set.
+ *                                null-terminated C string set.
  *  @param[in]      inKey         A pointer to the key with which to
- *                                associate the NULL-terminated C
+ *                                associate the null-terminated C
  *                                string in the dictionary.
- *  @param[in]      inString      The NULL-terminated C string value to set.
+ *  @param[in]      inString      The null-terminated C string value to set.
  *
  *  @returns
  *    True if the value was successfully set; otherwise, false.
@@ -556,16 +609,16 @@ CFUDictionarySetCString(CFMutableDictionaryRef inDictionary,
                         const char *           inString)
 {
     bool        status     = false;
-    CFStringRef tempString = NULL;
+    CFStringRef tempString = nullptr;
 
-    __Require(inDictionary != NULL, done);
-    __Require(inKey != NULL, done);
-    __Require(inString != NULL, done);
+    __Require(inDictionary != nullptr, done);
+    __Require(inKey != nullptr, done);
+    __Require(inString != nullptr, done);
 
     tempString = CFStringCreateWithCString(kCFAllocatorDefault,
                                            inString,
                                            CFStringGetSystemEncoding());
-    __Require(tempString != NULL, done);
+    __Require(tempString != nullptr, done);
 
     CFDictionarySetValue(inDictionary, inKey, tempString);
 
@@ -574,6 +627,334 @@ CFUDictionarySetCString(CFMutableDictionaryRef inDictionary,
 done:
     CFURelease(tempString);
 
+    return (status);
+}
+
+/**
+ *  This routine is a CoreFoundation dictionary applier function
+ *  that iterates on each key/value pair of a base or proposed
+ *  dictionary and determines whether each entry is unique or common
+ *  to the other.
+ *
+ *  @param[in]      inKey      A pointer to the key of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in]      inValue    A pointer to the value of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in,out]  inContext  A pointer to the iterator context. On
+ *                             completion and depending on the context
+ *                             phase, the context's added dictionary,
+ *                             if present, will contain entries unique
+ *                             to the proposed dictionary; the
+ *                             context's removed dictionary, if
+ *                             present, will contain entries unique to
+ *                             the base dictionary; and the context's
+ *                             common dictionary, if present, will
+ *                             contain entries common to both the base
+ *                             and proposed dictionaries but for which
+ *                             may have different values for their
+ *                             keys.
+ *
+ *  @private
+ *
+ */
+static void
+CFUDictionaryDifferenceApplier(const void *inKey,
+                               const void *inValue,
+                               void *inContext)
+{
+    CFStringRef                       theKey     = static_cast<CFStringRef>(inKey);
+    CFDictionaryRef                   theValue   = static_cast<CFDictionaryRef>(inValue);
+    CFUDictionaryDifferenceContext *  theContext = static_cast<CFUDictionaryDifferenceContext *>(inContext);
+
+    __Require(theKey != nullptr,     done);
+    __Require(theValue != nullptr,   done);
+    __Require(theContext != nullptr, done);
+
+    if (theContext->mPhase == kCFUDictionaryDifferencePhaseAdd)
+    {
+        const bool theDictionaryHasKey = CFDictionaryContainsKey(theContext->mBase, theKey);
+
+        if (!theDictionaryHasKey)
+        {
+            if (theContext->mAdded != nullptr)
+            {
+                CFDictionarySetValue(theContext->mAdded, theKey, theValue);
+            }
+        }
+        else
+        {
+            if (theContext->mCommon != nullptr)
+            {
+                CFDictionarySetValue(theContext->mCommon, theKey, theValue);
+            }
+        }
+    }
+    else if (theContext->mPhase == kCFUDictionaryDifferencePhaseRemove)
+    {
+        const bool theDictionaryHasKey = CFDictionaryContainsKey(theContext->mProposed, theKey);
+
+        if (!theDictionaryHasKey)
+        {
+            if (theContext->mRemoved != nullptr)
+            {
+                CFDictionarySetValue(theContext->mRemoved, theKey, theValue);
+            }
+        }
+        else
+        {
+            if (theContext->mCommon != nullptr)
+            {
+                CFDictionarySetValue(theContext->mCommon, theKey, theValue);
+            }
+        }
+    }
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Initialize a CoreFoundation dictionary difference context.
+ *
+ *  This intializes a CoreFoundation dictionary difference context for
+ *  a #CFUDictionaryDifference call.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   An reference to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outContext  A reference to the context to be
+ *                              intialized.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if memory allocation was unsuccessful.
+ *
+ *  @private
+ *
+ */
+static Boolean
+CFUDictionaryDifferenceContextSetup(CFDictionaryRef inProposed,
+                                    CFMutableDictionaryRef &inOutBase,
+                                    CFMutableDictionaryRef outAdded,
+                                    CFMutableDictionaryRef outCommon,
+                                    CFMutableDictionaryRef outRemoved,
+                                    CFUDictionaryDifferenceContext &outContext)
+{
+    Boolean status = true;
+
+    if (inOutBase == nullptr)
+    {
+        CFMutableDictionaryRef theTemporaryDictionary = nullptr;
+
+        theTemporaryDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                           0,
+                                                           &kCFTypeDictionaryKeyCallBacks,
+                                                           &kCFTypeDictionaryValueCallBacks);
+        __Require_Action(theTemporaryDictionary != nullptr,
+                         done,
+                         status = false);
+
+        CFUReferenceSet(inOutBase, theTemporaryDictionary);
+
+        CFURelease(theTemporaryDictionary);
+    }
+
+    // Setup the difference context based on the provided dictionary
+    // arguments.
+
+    outContext.mProposed = inProposed;
+    outContext.mBase     = inOutBase;
+    outContext.mAdded    = outAdded;
+    outContext.mCommon   = outCommon;
+    outContext.mRemoved  = outRemoved;
+
+ done:
+    return (status);
+
+}
+
+/**
+ *  @brief
+ *    Apply a difference between the proposed and base dictionaries.
+ *
+ *  The attempts to apply a difference between the proposed and base
+ *  dictionaries, returning, if requested by virtue of non-null
+ *  mutable dictionary references, the entries between the proposed
+ *  and base dictionaries that are unique to the proposed (that is,
+ *  added relative to the base), unique to the proposed (that is,
+ *  removed relative to the base), and common between them, though
+ *  with potentially different values between the base and proposed in
+ *  such case, the common dictionary will contain the base value.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   An reference to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied or if
+ *    memory allocation was unsuccessful.
+ *
+ */
+Boolean
+CFUDictionaryDifference(CFDictionaryRef inProposed,
+                        CFMutableDictionaryRef &inOutBase,
+                        CFMutableDictionaryRef outAdded,
+                        CFMutableDictionaryRef outCommon,
+                        CFMutableDictionaryRef outRemoved)
+{
+    CFUDictionaryDifferenceContext theContext;
+    Boolean                        status = true;
+
+    __Require_Action(inProposed != nullptr, done, status = false);
+
+    // Setup the difference context.
+
+    status = CFUDictionaryDifferenceContextSetup(inProposed,
+                                                 inOutBase,
+                                                 outAdded,
+                                                 outCommon,
+                                                 outRemoved,
+                                                 theContext);
+    __Require(status, done);
+    __Require(inOutBase != nullptr, done);
+
+    // Generate the dictionary unique to the proposed dictionary by
+    // iterating over the proposed dictionary, representing "what is".
+
+    theContext.mPhase   = kCFUDictionaryDifferencePhaseAdd;
+
+    CFDictionaryApplyFunction(inProposed,
+                              CFUDictionaryDifferenceApplier,
+                              &theContext);
+
+    // Generate the dictionary unique to the base dictionary by
+    // iterating over the base dictionary, representing "what was".
+
+    theContext.mPhase   = kCFUDictionaryDifferencePhaseRemove;
+
+    CFDictionaryApplyFunction(inOutBase,
+                              CFUDictionaryDifferenceApplier,
+                              &theContext);
+
+ done:
+    return (status);
+}
+
+/**
+ *  @brief
+ *    Apply a difference between the proposed and base dictionaries.
+ *
+ *  The attempts to apply a difference between the proposed and base
+ *  dictionaries, returning, if requested by virtue of non-null
+ *  mutable dictionary references, the entries between the proposed
+ *  and base dictionaries that are unique to the proposed (that is,
+ *  added relative to the base), unique to the proposed (that is,
+ *  removed relative to the base), and common between them, though
+ *  with potentially different values between the base and proposed in
+ *  such case, the common dictionary will contain the base value.
+ *
+ *  @param[in]      inProposed  A reference to the dictionary serving
+ *                              as the focus of the difference.
+ *  @param[in,out]  inOutBase   A pointer to a mutable dictionary
+ *                              reference serving as the base of the
+ *                              difference. The reference itself is
+ *                              optional and may be null. If the
+ *                              reference is null, a mutable
+ *                              dictionary will be allocated on the
+ *                              caller's behalf that becomes their
+ *                              responsiblity to release on success.
+ *  @param[out]     outAdded    An optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the proposed dictionary. If null,
+ *                              no such entries will be enumerated and
+ *                              populated.
+ *  @param[out]     outCommon   An optional reference to the mutable
+ *                              dictionary containing entries common
+ *                              to both the base and current
+ *                              dictionary but that may be changed
+ *                              between them in terms of values. If
+ *                              null, no such entries will be
+ *                              enumerated and populated.
+ *  @param[out]     outRemoved  A optional reference to the mutable
+ *                              dictionary containing entries unique
+ *                              to the base dictionary. If null, no
+ *                              such entries will be enumerated and
+ *                              populated.
+ *
+ *  @returns
+ *    True if the difference was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied or if
+ *    memory allocation was unsuccessful.
+ *
+ */
+Boolean
+CFUDictionaryDifference(CFDictionaryRef inProposed,
+                        CFMutableDictionaryRef *inOutBase,
+                        CFMutableDictionaryRef outAdded,
+                        CFMutableDictionaryRef outCommon,
+                        CFMutableDictionaryRef outRemoved)
+{
+    Boolean status = true;
+
+    __Require_Action(inOutBase != nullptr, done, status = false);
+
+    status = CFUDictionaryDifference(inProposed,
+                                     *inOutBase,
+                                     outAdded,
+                                     outCommon,
+                                     outRemoved);
+
+ done:
     return (status);
 }
 
@@ -664,18 +1045,18 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                            CFStringRef *       outError)
 {
     bool                 status    = false;
-    CFReadStreamRef      theStream = NULL;
+    CFReadStreamRef      theStream = nullptr;
     CFStreamStatus       streamStatus;
     CFPropertyListFormat theFormat;
 
-    __Require(inURL != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inURL != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation read file stream from the
     // resulting URL.
 
     theStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, inURL);
-    __Require(theStream != NULL, done);
+    __Require(theStream != nullptr, done);
 
     // Attempt to open the stream.
 
@@ -694,7 +1075,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
 
 #if HAVE_CFPROPERTYLISTCREATEWITHSTREAM
     {
-        CFErrorRef theError = NULL;
+        CFErrorRef theError = nullptr;
 
         *outPlist = CFPropertyListCreateWithStream(kCFAllocatorDefault,
                                                    theStream,
@@ -703,15 +1084,15 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                                                    &theFormat,
                                                    &theError);
 
-        if (theError != NULL) {
-            if (outError != NULL) {
+        if (theError != nullptr) {
+            if (outError != nullptr) {
                 *outError = CFErrorCopyDescription(theError);
             }
 
             CFRelease(theError);
         }
 
-        __Require_Action(*outPlist != NULL, done, status = false);
+        __Require_Action(*outPlist != nullptr, done, status = false);
     }
 #elif HAVE_CFPROPERTYLISTCREATEFROMSTREAM
     *outPlist = CFPropertyListCreateFromStream(kCFAllocatorDefault,
@@ -720,7 +1101,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
                                                inMutability,
                                                &theFormat,
                                                outError);
-    __Require_Action(*outPlist != NULL, done, status = false);
+    __Require_Action(*outPlist != nullptr, done, status = false);
 #else // !HAVE_CFPROPERTYLISTCREATEWITHSTREAM || !HAVE_CFPROPERTYLISTCREATEFROMSTREAM
 #error "One of 'CFPropertyListCreateWithStream' or 'CFPropertyListCreateFromStream' must be available."
 #endif // HAVE_CFPROPERTYLISTCREATEWITHSTREAM
@@ -731,7 +1112,7 @@ CFUPropertyListReadFromURL(CFURLRef            inURL,
     status = true;
 
 done:
-    if (theStream != NULL) {
+    if (theStream != nullptr) {
         CFReadStreamClose(theStream);
     }
 
@@ -771,18 +1152,18 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
                           CFStringRef *        outError)
 {
     bool             status    = false;
-    CFWriteStreamRef theStream = NULL;
+    CFWriteStreamRef theStream = nullptr;
     CFStreamStatus   streamStatus;
     CFIndex          theIndex;
 
-    __Require(inURL != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inURL != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation write file stream from the
     // specified URL.
 
     theStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, inURL);
-    __Require(theStream != NULL, done);
+    __Require(theStream != nullptr, done);
 
     // Attempt to open the stream.
 
@@ -796,7 +1177,7 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
 
 #if HAVE_CFPROPERTYLISTWRITE
     {
-        CFErrorRef theError = NULL;
+        CFErrorRef theError = nullptr;
 
         theIndex = CFPropertyListWrite(inPlist,
                                        theStream,
@@ -804,8 +1185,8 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
                                        0,
                                        &theError);
 
-        if (theError != NULL) {
-            if (outError != NULL) {
+        if (theError != nullptr) {
+            if (outError != nullptr) {
                 *outError = CFErrorCopyDescription(theError);
             }
 
@@ -830,7 +1211,7 @@ CFUPropertyListWriteToURL(CFURLRef             inURL,
     status = true;
 
 done:
-    if (theStream != NULL) {
+    if (theStream != nullptr) {
         CFWriteStreamClose(theStream);
     }
 
@@ -879,10 +1260,10 @@ CFUPropertyListReadFromFile(CFStringRef         inPath,
 {
     bool     kIsDirectory = true;
     bool     status       = false;
-    CFURLRef theURL       = NULL;
+    CFURLRef theURL       = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation URL for the specified file
     // path.
@@ -891,7 +1272,7 @@ CFUPropertyListReadFromFile(CFStringRef         inPath,
                                            inPath,
                                            kCFURLPOSIXPathStyle,
                                            !kIsDirectory);
-    __Require(theURL != NULL, done);
+    __Require(theURL != nullptr, done);
 
     // Attempt to read the property list from the URL.
 
@@ -943,10 +1324,10 @@ CFUPropertyListWriteToFile(CFStringRef          inPath,
 {
     bool     kIsDirectory = true;
     bool     status       = false;
-    CFURLRef theURL       = NULL;
+    CFURLRef theURL       = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Attempt to create a CoreFoundation URL for the specified file
     // path.
@@ -955,7 +1336,7 @@ CFUPropertyListWriteToFile(CFStringRef          inPath,
                                            inPath,
                                            kCFURLPOSIXPathStyle,
                                            !kIsDirectory);
-    __Require(theURL != NULL, done);
+    __Require(theURL != nullptr, done);
 
     // Attempt to write the property list to the URL.
 
@@ -1007,17 +1388,17 @@ CFUPropertyListReadFromFile(const char *        inPath,
                             CFStringRef *       outError)
 {
     bool        status  = false;
-    CFStringRef thePath = NULL;
+    CFStringRef thePath = nullptr;
 
-    __Require(inPath != NULL, done);
-    __Require(outPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(outPlist != nullptr, done);
 
     // Convert the provided path name to a CoreFoundation string.
 
     thePath = CFStringCreateWithCString(kCFAllocatorDefault,
                                         inPath,
                                         CFStringGetSystemEncoding());
-    __Require(thePath != NULL, done);
+    __Require(thePath != nullptr, done);
 
     // Attempt to read the property list from the file at the
     // specified path.
@@ -1071,21 +1452,21 @@ CFUPropertyListWriteToFile(const char *         inPath,
                            CFStringRef *        outError)
 {
     int          error;
-    CFStringRef  thePath     = NULL;
+    CFStringRef  thePath     = nullptr;
     const mode_t kReadAll    = (S_IRUSR | S_IRGRP | S_IROTH);
     const mode_t kWriteAll   = (S_IWUSR | S_IWGRP | S_IWOTH);
     const mode_t permissions = inWritable ? (kReadAll | kWriteAll) : kReadAll;
     bool         status      = false;
 
-    __Require(inPath != NULL, done);
-    __Require(inPlist != NULL, done);
+    __Require(inPath != nullptr, done);
+    __Require(inPlist != nullptr, done);
 
     // Convert the provided path name to a CoreFoundation string.
 
     thePath = CFStringCreateWithCString(kCFAllocatorDefault,
                                         inPath,
                                         CFStringGetSystemEncoding());
-    __Require(thePath != NULL, done);
+    __Require(thePath != nullptr, done);
 
     // Attempt to write the property list to the file at the specified
     // path.
@@ -1117,7 +1498,7 @@ done:
  *
  *  @returns
  *    True if the set is the empty set or the specified reference is
- *    NULL; otherwise, false.
+ *    null; otherwise, false.
  *
  *  @ingroup set
  *
@@ -1125,7 +1506,7 @@ done:
 bool
 CFUSetIsEmptySet(CFSetRef inSet)
 {
-    return ((inSet == NULL) ? true : (CFSetGetCount(inSet) == 0));
+    return ((inSet == nullptr) ? true : (CFSetGetCount(inSet) == 0));
 }
 
 /**
@@ -1179,7 +1560,7 @@ CFUSetIntersectionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 {
     CFUSetContext theContext = { inDestinationSet, inSourceSet };
 
-    if (inDestinationSet != NULL && inSourceSet != NULL) {
+    if (inDestinationSet != nullptr && inSourceSet != nullptr) {
         CFSetApplyFunction(inDestinationSet,
                            CFUSetIntersectionApplier,
                            &theContext);
@@ -1236,7 +1617,7 @@ CFUSetUnionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 {
     CFUSetContext theContext = { inDestinationSet, inSourceSet };
 
-    if (inDestinationSet != NULL && inSourceSet != NULL) {
+    if (inDestinationSet != nullptr && inSourceSet != nullptr) {
         CFSetApplyFunction(inSourceSet, CFUSetUnionApplier, &theContext);
     }
 
@@ -1258,7 +1639,7 @@ CFUSetUnionSet(CFMutableSetRef inDestinationSet, CFSetRef inSourceSet)
 void
 CFUTreeContextInit(CFTreeContext * inContext)
 {
-    if (inContext != NULL) {
+    if (inContext != nullptr) {
         *inContext = kCFUTreeContextInitializer;
     }
 }
@@ -1275,7 +1656,7 @@ CFUTreeContextInit(CFTreeContext * inContext)
  *                          by one.
  *
  *  @returns
- *    A reference to the newly-created tree if OK; otherwise, NULL on
+ *    A reference to the newly-created tree if OK; otherwise, null on
  *    error.
  *
  *  @ingroup tree
@@ -1284,7 +1665,7 @@ CFUTreeContextInit(CFTreeContext * inContext)
 CFTreeRef
 CFUTreeCreate(CFTypeRef inType)
 {
-    CFTreeRef     tempTree = NULL;
+    CFTreeRef     tempTree = nullptr;
     CFTreeContext theContext;
 
     CFUTreeContextInit(&theContext);
@@ -1295,7 +1676,7 @@ CFUTreeCreate(CFTypeRef inType)
     theContext.copyDescription = CFCopyDescription;
 
     tempTree = CFTreeCreate(kCFAllocatorDefault, &theContext);
-    __Require(tempTree != NULL, done);
+    __Require(tempTree != nullptr, done);
 
 done:
     return (tempTree);
@@ -1320,7 +1701,7 @@ CFUStringsMatch(CFStringRef aFirst, CFStringRef aSecond)
     CFComparisonResult comparison;
     bool               match = false;
 
-    if ((aFirst != NULL) && (aSecond != NULL)) {
+    if ((aFirst != nullptr) && (aSecond != nullptr)) {
         comparison = CFStringCompare(aFirst, aSecond, 0);
 
         match = (comparison == kCFCompareEqualTo);

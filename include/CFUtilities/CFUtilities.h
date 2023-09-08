@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2008-2021 Nuovation System Designs, LLC
+ *    Copyright (c) 2008-2023 Nuovation System Designs, LLC
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,6 +58,11 @@ extern void            CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
 extern Boolean         CFUDictionarySetCString(CFMutableDictionaryRef inDestination,
                                                const void *           inKey,
                                                const char *           inString);
+extern Boolean         CFUDictionaryDifference(CFDictionaryRef          inProposed,
+                                               CFMutableDictionaryRef * inOutBase,
+                                               CFMutableDictionaryRef   outAdded,
+                                               CFMutableDictionaryRef   outCommon,
+                                               CFMutableDictionaryRef   outRemoved);
 
 // CFNumber Operations
 
