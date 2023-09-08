@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2021 Nuovation System Designs, LLC. All Rights Reserved.
+#    Copyright (c) 2021-2023 Nuovation System Designs, LLC. All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -161,7 +161,7 @@ jobs:
         bash <(curl -s https://codecov.io/bash) -g 'include/*' -g 'src/*' -G 'tests/*'
 
   macos:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     name: "macOS ${{matrix.compiler['name']}}"
     strategy:
       matrix:
