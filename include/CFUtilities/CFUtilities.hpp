@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2008-2021 Nuovation System Designs, LLC
+ *    Copyright (c) 2008-2023 Nuovation System Designs, LLC
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -311,6 +311,11 @@ extern Boolean CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
 extern Boolean CFUDictionarySetBoolean(CFMutableDictionaryRef inDictionary,
                                        const void *           inKey,
                                        Boolean                inValue);
+extern Boolean CFUDictionaryDifference(CFDictionaryRef          inProposed,
+                                       CFMutableDictionaryRef & inOutBase,
+                                       CFMutableDictionaryRef   outAdded,
+                                       CFMutableDictionaryRef   outCommon,
+                                       CFMutableDictionaryRef   outRemoved);
 
 extern Boolean CFUPropertyListReadFromFile(CFStringRef         inPath,
                                            CFOptionFlags       inMutability,
