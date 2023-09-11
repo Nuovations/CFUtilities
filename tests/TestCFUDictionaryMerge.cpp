@@ -57,6 +57,7 @@ TestCFUDictionaryMerge :: TestNull(void)
     const bool             kReplace              = true;
     CFMutableDictionaryRef lMutableDictionaryRef = NULL;
     CFDictionaryRef        lDictionaryRef        = NULL;
+    Boolean                lStatus;
 
     lMutableDictionaryRef = CFDictionaryCreateMutable(kCFAllocatorDefault,
                                                       0,
@@ -74,15 +75,18 @@ TestCFUDictionaryMerge :: TestNull(void)
 
     // Test NULL destination and non-NULL source
 
-    CFUDictionaryMerge(NULL, lDictionaryRef, kReplace);
+    lStatus = CFUDictionaryMerge(NULL, lDictionaryRef, kReplace);
+    CPPUNIT_ASSERT(lStatus == false);
 
     // Test non-NULL destination and NULL source
 
-    CFUDictionaryMerge(lMutableDictionaryRef, NULL, kReplace);
+    lStatus = CFUDictionaryMerge(lMutableDictionaryRef, NULL, kReplace);
+    CPPUNIT_ASSERT(lStatus == false);
 
     // Test NULL destination and source
 
-    CFUDictionaryMerge(NULL, NULL, kReplace);
+    lStatus = CFUDictionaryMerge(NULL, NULL, kReplace);
+    CPPUNIT_ASSERT(lStatus == false);
 
     if (lDictionaryRef != NULL) {
         CFRelease(lDictionaryRef);
@@ -135,6 +139,7 @@ TestCFUDictionaryMerge :: TestNonNullNoIntersection(const bool & aReplace)
     CFIndex                lDictionaryCount;
     CFStringRef            lStringValue;
     CFComparisonResult     lComparisonResult;
+    Boolean                lStatus;
 
     lMutableDictionaryRef = CFDictionaryCreateMutable(kCFAllocatorDefault,
                                                       0,
@@ -160,7 +165,8 @@ TestCFUDictionaryMerge :: TestNonNullNoIntersection(const bool & aReplace)
     // Merge the two dictionaries (source into destination,
     // non-mutable into mutable).
 
-    CFUDictionaryMerge(lMutableDictionaryRef, lDictionaryRef, aReplace);
+    lStatus = CFUDictionaryMerge(lMutableDictionaryRef, lDictionaryRef, aReplace);
+    CPPUNIT_ASSERT(lStatus == true);
     CPPUNIT_ASSERT(lMutableDictionaryRef != NULL);
     CPPUNIT_ASSERT(lDictionaryRef != NULL);
 
@@ -270,6 +276,7 @@ TestCFUDictionaryMerge :: TestNonNullIntersection(const bool & aReplace)
     CFIndex                lDictionaryCount;
     CFStringRef            lStringValue;
     CFComparisonResult     lComparisonResult;
+    Boolean                lStatus;
 
     lMutableDictionaryRef = CFDictionaryCreateMutable(kCFAllocatorDefault,
                                                       0,
@@ -298,7 +305,8 @@ TestCFUDictionaryMerge :: TestNonNullIntersection(const bool & aReplace)
     // Merge the two dictionaries (source into destination,
     // non-mutable into mutable).
 
-    CFUDictionaryMerge(lMutableDictionaryRef, lDictionaryRef, aReplace);
+    lStatus = CFUDictionaryMerge(lMutableDictionaryRef, lDictionaryRef, aReplace);
+    CPPUNIT_ASSERT(lStatus == true);
     CPPUNIT_ASSERT(lMutableDictionaryRef != NULL);
     CPPUNIT_ASSERT(lDictionaryRef != NULL);
 

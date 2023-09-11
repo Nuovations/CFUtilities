@@ -415,23 +415,28 @@ done:
  *                                 values already exist in the
  *                                 destination.
  *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
  *  @ingroup dictionary
  *
  */
-void
+Boolean
 CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
                    CFDictionaryRef        inSource,
                    bool                   inReplace)
 {
     CFUDictionaryMergeContext theContext = { inDestination, inReplace };
+    Boolean                   status     = true;
 
-    __Require(inDestination != nullptr, done);
-    __Require(inSource != nullptr, done);
+    __Require_Action(inDestination != nullptr, done, status = false);
+    __Require_Action(inSource      != nullptr, done, status = false);
 
     CFDictionaryApplyFunction(inSource, CFUDictionaryMergeApplier, &theContext);
 
 done:
-    return;
+    return (status);
 }
 
 /**

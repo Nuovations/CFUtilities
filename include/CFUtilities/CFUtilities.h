@@ -52,7 +52,7 @@ extern CFDateRef       CFUDateCreate(CFAllocatorRef inAllocator, time_t inTime);
 // CFDictionary Operations
 
 extern CFArrayRef      CFUDictionaryCopyKeys(CFDictionaryRef inDictionary);
-extern void            CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
+extern Boolean         CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
                                           CFDictionaryRef        inSource,
                                           bool                   inReplace);
 extern Boolean         CFUDictionarySetCString(CFMutableDictionaryRef inDestination,
