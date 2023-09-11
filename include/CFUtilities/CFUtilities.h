@@ -55,6 +55,14 @@ extern CFArrayRef      CFUDictionaryCopyKeys(CFDictionaryRef inDictionary);
 extern Boolean         CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
                                           CFDictionaryRef        inSource,
                                           bool                   inReplace);
+extern Boolean         CFUDictionaryMergeWithDifferences(CFMutableDictionaryRef inOutBase,
+                                                         CFDictionaryRef        inAdded,
+                                                         CFDictionaryRef        inCommon,
+                                                         CFDictionaryRef        inRemoved);
+extern Boolean         CFUDictionaryMergeWithDifferencesAndRemovedKeys(CFMutableDictionaryRef inOutBase,
+                                                                       CFDictionaryRef        inAdded,
+                                                                       CFDictionaryRef        inCommon,
+                                                                       CFArrayRef             inRemovedKeys);
 extern Boolean         CFUDictionarySetCString(CFMutableDictionaryRef inDestination,
                                                const void *           inKey,
                                                const char *           inString);

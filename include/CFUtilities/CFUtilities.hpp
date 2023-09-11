@@ -311,6 +311,14 @@ extern Boolean CFUDictionaryGetBoolean(CFDictionaryRef inDictionary,
 extern Boolean CFUDictionarySetBoolean(CFMutableDictionaryRef inDictionary,
                                        const void *           inKey,
                                        Boolean                inValue);
+extern Boolean CFUDictionaryMerge(CFMutableDictionaryRef inOutBase,
+                                  CFDictionaryRef        inAdded,
+                                  CFDictionaryRef        inCommon,
+                                  CFDictionaryRef        inRemoved);
+extern Boolean CFUDictionaryMerge(CFMutableDictionaryRef inOutBase,
+                                  CFDictionaryRef        inAdded,
+                                  CFDictionaryRef        inCommon,
+                                  CFArrayRef             inRemovedKeys);
 extern Boolean CFUDictionaryDifference(CFDictionaryRef          inProposed,
                                        CFMutableDictionaryRef & inOutBase,
                                        CFMutableDictionaryRef   outAdded,
