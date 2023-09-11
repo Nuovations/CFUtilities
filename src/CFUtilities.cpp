@@ -68,6 +68,15 @@ enum CFUDictionaryDifferencePhase
 };
 
 /**
+ *  Indicator of the phase of the dictionary merge with differences
+ *  algorithm.
+ *
+ *  @private
+ *
+ */
+typedef CFUDictionaryDifferencePhase CFUDictionaryMergeWithDifferencesPhase;
+
+/**
  *  Iterator context for the dictionary difference interface.
  *
  *  @private
@@ -104,7 +113,7 @@ struct CFUDictionaryDifferenceContext {
 /**
  *  Iterator context for the dictionary merge interface.
  *
- * @private
+ *  @private
  */
 struct CFUDictionaryMergeContext {
     // clang-format off
@@ -120,9 +129,25 @@ struct CFUDictionaryMergeContext {
 };
 
 /**
- * Iterator context used for the set intersection and union interfaces.
+ *  Iterator context for the dictionary merge with differences interfaces.
  *
- * @private
+ *  @private
+ */
+struct CFUDictionaryMergeWithDifferencesContext {
+    // clang-format off
+    CFUDictionaryMergeWithDifferencesPhase  mPhase;                  //!< The current merge
+                                                                     //!< algorithm phase.
+    CFMutableDictionaryRef                  mDestinationDictionary;  //!< A reference to the
+                                                                     //!< mutable dictionary to
+                                                                     //!< merge keys and values
+                                                                     //!< to.
+    // clang-format on
+};
+
+/**
+ *  Iterator context used for the set intersection and union interfaces.
+ *
+ *  @private
  */
 struct CFUSetContext {
     // clang-format off
@@ -364,7 +389,7 @@ CFUDictionaryMergeApplier(const void * inKey,
     CFUDictionaryMergeContext * theContext = nullptr;
     bool                        hasKey;
 
-    __Require(inKey != nullptr, done);
+    __Require(inKey     != nullptr, done);
     __Require(inContext != nullptr, done);
 
     theContext = static_cast<CFUDictionaryMergeContext *>(inContext);
@@ -393,6 +418,346 @@ done:
 }
 
 /**
+ *  This routine is a CoreFoundation dictionary applier function that
+ *  iterates on each key/value pair of an added, common, removed
+ *  difference dictionary (likely generated from
+ *  #CFUDictionaryDifference) and applies the difference to the base
+ *  dictionary as appropriate for the current algorithm phase.
+
+ *
+ *  @param[in]      inKey      A pointer to the key of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in]      inValue    A pointer to the value of the current
+ *                             key/value pair being iterated upon.
+ *  @param[in,out]  inContext  A pointer to the iterator context. On
+ *                             completion and depending on the context
+ *                             phase, the add phase will add those
+ *                             key/value pairs to the base; the remove
+ *                             phase will remove those key/value pairs
+ *                             from the base; and the phase will
+ *                             replace those key/value pairs for which
+ *                             the value is different in the common
+ *                             relative to the base with the value
+ *                             from the common.
+ *
+ *  @private
+ *
+ */
+static void
+CFUDictionaryMergeWithDifferencesApplier(const void * inKey,
+                                         const void * inValue,
+                                         void *       inContext)
+{
+    CFStringRef                                 theKey     =
+        static_cast<CFStringRef>(inKey);
+    CFTypeRef                                   theValue   =
+        static_cast<CFTypeRef>(inValue);
+    CFUDictionaryMergeWithDifferencesContext *  theContext =
+        static_cast<CFUDictionaryMergeWithDifferencesContext *>(inContext);
+
+    __Require(theKey     != nullptr, done);
+    __Require(theValue   != nullptr, done);
+    __Require(theContext != nullptr, done);
+
+    // If the phase is add, set the key/value pair.
+    //
+    // If the phase is common, replace the key/value pair if unequal.
+    //
+    // If the phase is remove, remove the key/value pair.
+
+    if (theContext->mPhase == kCFUDictionaryDifferencePhaseAdd)
+    {
+        CFDictionarySetValue(theContext->mDestinationDictionary, theKey, theValue);
+    }
+    else if (theContext->mPhase == kCFUDictionaryDifferencePhaseCommon)
+    {
+        CFTypeRef      theCurrentValue;
+        Boolean        lEqual;
+
+        theCurrentValue = static_cast<CFTypeRef>(CFDictionaryGetValue(theContext->mDestinationDictionary, theKey));
+        __Require(theCurrentValue != nullptr, done);
+
+        lEqual = CFEqual(theCurrentValue, theValue);
+
+        if (!lEqual)
+        {
+            CFDictionaryReplaceValue(theContext->mDestinationDictionary, theKey, theValue);
+        }
+    }
+    else if (theContext->mPhase == kCFUDictionaryDifferencePhaseRemove)
+    {
+        CFDictionaryRemoveValue(theContext->mDestinationDictionary, theKey);
+    }
+
+ done:
+    return;
+}
+
+/**
+ *  This routine is a CoreFoundation array applier function that
+ *  iterates on each value of a removed keys array and applies them
+ *  difference to the base dictionary, as appropriate for the current
+ *  algorithm phase, by removing the corresponding key/value pairs
+ *  from the base dictionary.
+ *
+ *  @param[in]      inValue    A pointer to the current value being
+ *                             iterated upon. This value is actually a
+ *                             dictionary key.
+ *  @param[in,out]  inContext  A pointer to the iterator context. On
+ *                             completion and depending on the context
+ *                             phase, the remove phase will remove
+ *                             those key/value pairs from the base.
+ *
+ *  @private
+ *
+ */
+static void
+CFUDictionaryMergeWithDifferencesApplierAndRemovedKeysApplier(const void * inValue,
+                                                              void *       inContext)
+{
+    // Note that that since this actually matches the signature of an
+    // array applier, in this context, the array values are actually
+    // dictionary keys. Consequently, the local is named accordingly.
+
+    CFDictionaryRef                             theKey     =
+        static_cast<CFDictionaryRef>(inValue);
+    CFUDictionaryMergeWithDifferencesContext *  theContext =
+        static_cast<CFUDictionaryMergeWithDifferencesContext *>(inContext);
+
+    __Require(theKey     != nullptr, done);
+    __Require(theContext != nullptr, done);
+
+    // There is only work to do in this case for the removal
+    // phase. Other phases are handled with other applier functions.
+
+    if (theContext->mPhase == kCFUDictionaryDifferencePhaseRemove)
+    {
+        CFDictionaryRemoveValue(theContext->mDestinationDictionary, theKey);
+    }
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Merge a CoreFoundation dictionary from one or more difference
+ *    dictionaries.
+ *
+ *  This routine merges a mutable CoreFoundation dictionary from one
+ *  or more difference dictionaries (likely generated from
+ *  #CFUDictionaryDifference). If present, key/value pairs in the @a
+ *  inAdded dictionary are added to @a inOutBase and, if present,
+ *  key/value pairs in the @a inCommon dictionary replace those in @a
+ *  inOutBase if the values are different.
+ *
+ *  @param[in,out]  inOutBase  A reference to the mutable dictionary
+ *                             to merge keys and values to. On
+ *                             success, @a inOutBase contains a
+ *                             reference to the destination dictionary
+ *                             with entries from the added and common
+ *                             dictionaries merged in.
+ *  @param[out]     inAdded    An optional reference to the dictionary
+ *                             containing entries to be added to the
+ *                             base dictionary. If null, no such
+ *                             entries will be added.
+ *  @param[in]      inCommon   An optional reference to the dictionary
+ *                             containing entries common to the base
+ *                             dictionary, but potentially with
+ *                             different values. Values that are
+ *                             different will replace those in the
+ *                             base. If null, no such entries will be
+ *                             replaced.
+ *
+ *  @private
+ *
+ */
+static void
+CFUDictionaryMerge(CFUDictionaryMergeWithDifferencesContext &  inOutContext,
+                   CFMutableDictionaryRef                      inOutBase,
+                   CFDictionaryRef                             inAdded,
+                   CFDictionaryRef                             inCommon)
+{
+    inOutContext.mDestinationDictionary = inOutBase;
+
+    if (inAdded != nullptr)
+    {
+        // Add new values
+
+        inOutContext.mPhase = kCFUDictionaryDifferencePhaseAdd;
+
+        CFDictionaryApplyFunction(inAdded,
+                                  CFUDictionaryMergeWithDifferencesApplier,
+                                  &inOutContext);
+    }
+
+    if (inCommon != nullptr)
+    {
+        // Update common values;
+
+        inOutContext.mPhase = kCFUDictionaryDifferencePhaseCommon;
+
+        CFDictionaryApplyFunction(inCommon,
+                                  CFUDictionaryMergeWithDifferencesApplier,
+                                  &inOutContext);
+    }
+}
+
+/**
+ *  @brief
+ *    Merge a CoreFoundation dictionary from one or more difference
+ *    dictionaries.
+ *
+ *  This routine merges a mutable CoreFoundation dictionary from one
+ *  or more difference dictionaries (likely generated from
+ *  #CFUDictionaryDifference). If present, key/value pairs in the @a
+ *  inAdded dictionary are added to @a inOutBase; if present,
+ *  key/value pairs in the @a inCommon dictionary replace those in @a
+ *  inOutBase if the values are different; and, if present, key/value
+ *  pairs in the @a inRemoved dictionary are removed from @a
+ *  inOutBase.
+ *
+ *  @param[in,out]  inOutBase  A reference to the mutable dictionary
+ *                             to merge keys and values to. On
+ *                             success, @a inOutBase contains
+ *                             a reference to the destination
+ *                             dictionary with entries from the
+ *                             added, common, and removed
+ *                             dictionaries merged in.
+ *  @param[out]     inAdded    An optional reference to the dictionary
+ *                             containing entries to be added to the
+ *                             base dictionary. If null, no such
+ *                             entries will be added.
+ *  @param[in]      inCommon   An optional reference to the dictionary
+ *                             containing entries common to the base
+ *                             dictionary, but potentially with
+ *                             different values. Values that are
+ *                             different will replace those in the
+ *                             base. If null, no such entries will be
+ *                             replaced.
+ *  @param[in]      inRemoved  An optional reference to the dictionary
+ *                             containing entries to be removed from
+ *                             the base dictionary. If null, no such
+ *                             entries will be removed.
+ *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
+ *  @sa CFUDictionaryDifference
+ *
+ *  @ingroup dictionary
+ *
+ */
+Boolean
+CFUDictionaryMerge(CFMutableDictionaryRef inOutBase,
+                   CFDictionaryRef        inAdded,
+                   CFDictionaryRef        inCommon,
+                   CFDictionaryRef        inRemoved)
+{
+    CFUDictionaryMergeWithDifferencesContext  theContext;
+    Boolean                                   status = true;
+
+    __Require_Action(inOutBase != nullptr, done, status = false);
+
+    // Add new and update common values
+
+    CFUDictionaryMerge(theContext, inOutBase, inAdded, inCommon);
+
+    if (inRemoved != nullptr)
+    {
+        // Remove old values
+
+        theContext.mPhase = kCFUDictionaryDifferencePhaseRemove;
+
+        CFDictionaryApplyFunction(inRemoved,
+                                  CFUDictionaryMergeWithDifferencesApplier,
+                                  &theContext);
+    }
+
+ done:
+    return (status);
+}
+
+/**
+ *  @brief
+ *    Merge a CoreFoundation dictionary from one or more difference
+ *    dictionaries.
+ *
+ *  This routine merges a mutable CoreFoundation dictionary from two
+ *  or more difference dictionaries (likely generated from
+ *  #CFUDictionaryDifference) and a difference array, containing
+ *  removed keys. If present, key/value pairs in the @a inAdded
+ *  dictionary are added to @a inOutBase; if present, key/value pairs
+ *  in the @a inCommon dictionary replace those in @a inOutBase if the
+ *  values are different; and, if present, keys in the @a
+ *  inRemovedKeys array are removed from @a inOutBase.
+ *
+ *  @param[in,out]  inOutBase      A reference to the mutable
+ *                                 dictionary to merge keys and values
+ *                                 to. On success, @a inOutBase
+ *                                 contains a reference to the
+ *                                 destination dictionary with entries
+ *                                 from the added and common
+ *                                 dictionaries and the removed keys
+ *                                 array merged in.
+ *  @param[out]     inAdded        An optional reference to the
+ *                                 dictionary containing entries to be
+ *                                 added to the base dictionary. If
+ *                                 null, no such entries will be
+ *                                 added.
+ *  @param[in]      inCommon       An optional reference to the
+ *                                 dictionary containing entries
+ *                                 common to the base dictionary, but
+ *                                 potentially with different
+ *                                 values. Values that are different
+ *                                 will replace those in the base. If
+ *                                 null, no such entries will be
+ *                                 replaced.
+ *  @param[in]      inRemovedKeys  An optional reference to the array
+ *                                 containing key to be removed from
+ *                                 the base dictionary. If null, no such
+ *                                 entries will be removed.
+ *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
+ *  @ingroup dictionary
+ *
+ */
+Boolean
+CFUDictionaryMerge(CFMutableDictionaryRef inOutBase,
+                   CFDictionaryRef        inAdded,
+                   CFDictionaryRef        inCommon,
+                   CFArrayRef             inRemovedKeys)
+{
+    CFUDictionaryMergeWithDifferencesContext  theContext;
+    Boolean                                   status = true;
+
+    __Require_Action(inOutBase != nullptr, done, status = false);
+
+    // Add new and update common values
+
+    CFUDictionaryMerge(theContext, inOutBase, inAdded, inCommon);
+
+    if (inRemovedKeys != nullptr)
+    {
+        // Remove old values
+
+        theContext.mPhase = kCFUDictionaryDifferencePhaseRemove;
+
+        CFArrayApplyFunction(inRemovedKeys,
+                             CFRangeMake(0, CFArrayGetCount(inRemovedKeys)),
+                             CFUDictionaryMergeWithDifferencesApplierAndRemovedKeysApplier,
+                             &theContext);
+    }
+
+ done:
+    return (status);
+}
+
+/**
  *  @brief
  *    Merge two CoreFoundation dictionaries.
  *
@@ -415,23 +780,151 @@ done:
  *                                 values already exist in the
  *                                 destination.
  *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
  *  @ingroup dictionary
  *
  */
-void
+Boolean
 CFUDictionaryMerge(CFMutableDictionaryRef inDestination,
                    CFDictionaryRef        inSource,
                    bool                   inReplace)
 {
     CFUDictionaryMergeContext theContext = { inDestination, inReplace };
+    Boolean                   status     = true;
 
-    __Require(inDestination != nullptr, done);
-    __Require(inSource != nullptr, done);
+    __Require_Action(inDestination != nullptr, done, status = false);
+    __Require_Action(inSource      != nullptr, done, status = false);
 
     CFDictionaryApplyFunction(inSource, CFUDictionaryMergeApplier, &theContext);
 
 done:
-    return;
+    return (status);
+}
+
+/**
+ *  @brief
+ *    Merge a CoreFoundation dictionary from one or more difference
+ *    dictionaries.
+ *
+ *  This routine merges a mutable CoreFoundation dictionary from one
+ *  or more difference dictionaries (likely generated from
+ *  #CFUDictionaryDifference). If present, key/value pairs in the @a
+ *  inAdded dictionary are added to @a inOutBase; if present,
+ *  key/value pairs in the @a inCommon dictionary replace those in @a
+ *  inOutBase if the values are different; and, if present, key/value
+ *  pairs in the @a inRemoved dictionary are removed from @a
+ *  inOutBase.
+ *
+ *  @param[in,out]  inOutBase  A reference to the mutable dictionary
+ *                             to merge keys and values to. On
+ *                             success, @a inOutBase contains
+ *                             a reference to the destination
+ *                             dictionary with entries from the
+ *                             added, common, and removed
+ *                             dictionaries merged in.
+ *  @param[out]     inAdded    An optional reference to the dictionary
+ *                             containing entries to be added to the
+ *                             base dictionary. If null, no such
+ *                             entries will be added.
+ *  @param[in]      inCommon   An optional reference to the dictionary
+ *                             containing entries common to the base
+ *                             dictionary, but potentially with
+ *                             different values. Values that are
+ *                             different will replace those in the
+ *                             base. If null, no such entries will be
+ *                             replaced.
+ *  @param[in]      inRemoved  An optional reference to the dictionary
+ *                             containing entries to be removed from
+ *                             the base dictionary. If null, no such
+ *                             entries will be removed.
+ *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
+ *  @ingroup dictionary
+ *
+ */
+Boolean
+CFUDictionaryMergeWithDifferences(CFMutableDictionaryRef inOutBase,
+                                  CFDictionaryRef        inAdded,
+                                  CFDictionaryRef        inCommon,
+                                  CFDictionaryRef        inRemoved)
+{
+    Boolean status = true;
+
+    status = CFUDictionaryMerge(inOutBase,
+                                inAdded,
+                                inCommon,
+                                inRemoved);
+
+    return (status);
+}
+
+/**
+ *  @brief
+ *    Merge a CoreFoundation dictionary from one or more difference
+ *    dictionaries.
+ *
+ *  This routine merges a mutable CoreFoundation dictionary from two
+ *  or more difference dictionaries (likely generated from
+ *  #CFUDictionaryDifference) and a difference array, containing
+ *  removed keys. If present, key/value pairs in the @a inAdded
+ *  dictionary are added to @a inOutBase; if present, key/value pairs
+ *  in the @a inCommon dictionary replace those in @a inOutBase if the
+ *  values are different; and, if present, keys in the @a
+ *  inRemovedKeys array are removed from @a inOutBase.
+ *
+ *  @param[in,out]  inOutBase      A reference to the mutable
+ *                                 dictionary to merge keys and values
+ *                                 to. On success, @a inOutBase
+ *                                 contains a reference to the
+ *                                 destination dictionary with entries
+ *                                 from the added and common
+ *                                 dictionaries and the removed keys
+ *                                 array merged in.
+ *  @param[out]     inAdded        An optional reference to the
+ *                                 dictionary containing entries to be
+ *                                 added to the base dictionary. If
+ *                                 null, no such entries will be
+ *                                 added.
+ *  @param[in]      inCommon       An optional reference to the
+ *                                 dictionary containing entries
+ *                                 common to the base dictionary, but
+ *                                 potentially with different
+ *                                 values. Values that are different
+ *                                 will replace those in the base. If
+ *                                 null, no such entries will be
+ *                                 replaced.
+ *  @param[in]      inRemovedKeys  An optional reference to the array
+ *                                 containing key to be removed from
+ *                                 the base dictionary. If null, no such
+ *                                 entries will be removed.
+ *
+ *  @returns
+ *    True if the merge was successful; otherwise, false. False
+ *    may be returned if an incorrect argument was supplied.
+ *
+ *  @ingroup dictionary
+ *
+ */
+Boolean
+CFUDictionaryMergeWithDifferencesAndRemovedKeys(CFMutableDictionaryRef inOutBase,
+                                                CFDictionaryRef        inAdded,
+                                                CFDictionaryRef        inCommon,
+                                                CFArrayRef             inRemovedKeys)
+{
+    Boolean status = true;
+
+    status = CFUDictionaryMerge(inOutBase,
+                                inAdded,
+                                inCommon,
+                                inRemovedKeys);
+
+    return (status);
 }
 
 /**
@@ -844,6 +1337,8 @@ CFUDictionaryDifferenceContextSetup(CFDictionaryRef inProposed,
  *    may be returned if an incorrect argument was supplied or if
  *    memory allocation was unsuccessful.
  *
+ *  @ingroup dictionary
+ *
  */
 Boolean
 CFUDictionaryDifference(CFDictionaryRef inProposed,
@@ -935,6 +1430,8 @@ CFUDictionaryDifference(CFDictionaryRef inProposed,
  *    True if the difference was successful; otherwise, false. False
  *    may be returned if an incorrect argument was supplied or if
  *    memory allocation was unsuccessful.
+ *
+ *  @ingroup dictionary
  *
  */
 Boolean
