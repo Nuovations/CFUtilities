@@ -1,3 +1,17 @@
+1.2.0 (2023-09-11)
+
+        * Added C/C++ bindings for merging a CoreFoundation dictionary
+          from one or more "difference" dictionaries (or key arrays).
+
+        * Added C/C++ bindings for creating a series of one or more
+          CoreFoundation "difference" dictionaries from a base and a
+          proposed CoreFoundation dictionary, where the difference
+          dictionaries may contain key/value pairs unique to the base,
+          unique to the proposed, or common between them.
+
+        * Addressed an issue in the `TestCFUDictionaryMerge` test
+          driver that could have led to an incorrect test result.
+
 1.1.1 (2021-06-11)
 
         * Resolved a number of compiler warnings/errors under clang/LLVM.
