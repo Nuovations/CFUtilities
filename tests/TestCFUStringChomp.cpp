@@ -91,7 +91,7 @@ TestCFUStringChomp :: TestMatching(void)
     CPPUNIT_ASSERT(lMutableStringRef != nullptr);
 
     lInitialLength = CFStringGetLength(lStringRef);
-    lLength        = lInitialLength;
+    lLength        = static_cast<size_t>(lInitialLength);
 
     lStatus = CFUStringChomp(lMutableStringRef, lLength);
     CPPUNIT_ASSERT(lStatus == true);
@@ -137,7 +137,7 @@ TestCFUStringChomp :: TestNotMatching(void)
     CPPUNIT_ASSERT(lMutableStringRef != nullptr);
 
     lInitialLength = CFStringGetLength(lStringRef);
-    lLength        = lInitialLength;
+    lLength        = static_cast<size_t>(lInitialLength);
 
     lStatus = CFUStringChomp(lMutableStringRef, lLength);
     CPPUNIT_ASSERT(lStatus == false);

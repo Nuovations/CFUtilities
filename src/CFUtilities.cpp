@@ -2213,7 +2213,8 @@ CFUStringChomp(CFMutableStringRef inOutString, size_t &inOutLength)
     lReplacedInstances = CFStringFindAndReplace(inOutString,
                                                 CFSTR("\n"),
                                                 CFSTR(""),
-                                                CFRangeMake(inOutLength - 1, inOutLength),
+                                                CFRangeMake(static_cast<CFIndex>(inOutLength - 1),
+                                                            static_cast<CFIndex>(inOutLength)),
                                                 kCFCompareBackwards);
 
     if (lReplacedInstances == 1)
@@ -2252,7 +2253,7 @@ CFUStringChomp(CFMutableStringRef inOutString)
 
     __Require(inOutString != nullptr, done);
 
-    lLength = CFStringGetLength(inOutString);
+    lLength = static_cast<size_t>(CFStringGetLength(inOutString));
 
     lRetval = CFUStringChomp(inOutString, lLength);
 
