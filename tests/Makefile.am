@@ -77,6 +77,7 @@ check_PROGRAMS                                = \
     TestCFUSetIntersectionSet                   \
     TestCFUSetUnionSet                          \
     TestCFUStringsMatch                         \
+    TestCFUStringChomp                          \
     TestCFUTreeContextInit                      \
     TestCFUTreeCreate                           \
     $(NULL)
@@ -187,6 +188,10 @@ TestCFUSetIsEmptySet_SOURCES                  = TestDriver.cpp                  
 TestCFUSetUnionSet_LDADD                      = $(COMMON_LDADD)
 TestCFUSetUnionSet_SOURCES                    = TestDriver.cpp                      \
                                                 TestCFUSetUnionSet.cpp
+
+TestCFUStringChomp_LDADD                      = $(COMMON_LDADD)
+TestCFUStringChomp_SOURCES                    = TestDriver.cpp                      \
+                                                TestCFUStringChomp.cpp
 
 TestCFUStringsMatch_LDADD                     = $(COMMON_LDADD)
 TestCFUStringsMatch_SOURCES                   = TestDriver.cpp                      \
