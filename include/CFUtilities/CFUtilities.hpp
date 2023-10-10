@@ -334,6 +334,11 @@ extern Boolean CFUPropertyListWriteToFile(CFStringRef          inPath,
                                           CFPropertyListRef    inPlist,
                                           CFStringRef *        outError);
 
+// CFString Operations
+
+extern bool    CFUStringChomp(CFMutableStringRef inOutString,
+                              size_t &inOutLength);
+
 #endif // __cplusplus
 
 #endif // CFUTILITIES_CFUTILITIES_HPP

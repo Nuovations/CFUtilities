@@ -2180,7 +2180,88 @@ done:
 }
 
 /**
- *  This is helper function to do a quick string comparison between
+ *  @brief
+ *    Remove a trailing newline, if present, from the specified
+ *    string.
+ *
+ *  This attempts to remove, if present, a trailing newline from the
+ *  specified string.
+ *
+ *  @param[in,out]  inOutString  A CoreFoundation mutable string
+ *                               reference from which to try to remove
+ *                               a trailing newline.
+ *  @param[in,out]  inOutLength  The length of @a inOutString, in
+ *                               characters, before and, if
+ *                               successful, after removal of any
+ *                               trailing newline. On success, the
+ *                               output value is expected to be one
+ *                               less than its input value.
+ *
+ *  @returns
+ *    True if a trailing newline was found and removed; otherwise,
+ *    false.
+ *
+ */
+bool
+CFUStringChomp(CFMutableStringRef inOutString, size_t &inOutLength)
+{
+    CFIndex  lReplacedInstances;
+    bool     lRetval = false;
+
+    __Require(inOutString != nullptr, done);
+
+    lReplacedInstances = CFStringFindAndReplace(inOutString,
+                                                CFSTR("\n"),
+                                                CFSTR(""),
+                                                CFRangeMake(inOutLength - 1, inOutLength),
+                                                kCFCompareBackwards);
+
+    if (lReplacedInstances == 1)
+    {
+        inOutLength--;
+
+        lRetval = true;
+    }
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Remove a trailing newline, if present, from the specified
+ *    string.
+ *
+ *  This attempts to remove, if present, a trailing newline from the
+ *  specified string.
+ *
+ *  @param[in,out]  inOutString  A CoreFoundation mutable string
+ *                               reference from which to try to remove
+ *                               a trailing newline.
+ *
+ *  @returns
+ *    True if a trailing newline was found and removed; otherwise,
+ *    false.
+ *
+ */
+bool
+CFUStringChomp(CFMutableStringRef inOutString)
+{
+    size_t  lLength;
+    bool    lRetval = false;
+
+    __Require(inOutString != nullptr, done);
+
+    lLength = CFStringGetLength(inOutString);
+
+    lRetval = CFUStringChomp(inOutString, lLength);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  This is a helper function to do a quick string comparison between
  *  two CFStringRefs
  *
  *  @param[in]  aFirst   A CoreFoundation string reference to the first string
