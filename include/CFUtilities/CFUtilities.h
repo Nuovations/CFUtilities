@@ -112,6 +112,7 @@ extern CFTreeRef       CFUTreeCreate(CFTypeRef inType);
 
 // CFString Operations
 
+extern bool            CFUStringChomp(CFMutableStringRef inOutString);
 extern bool            CFUStringsMatch(CFStringRef aFirst, CFStringRef aSecond);
 
 #ifdef __cplusplus
