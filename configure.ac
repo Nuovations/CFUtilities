@@ -193,6 +193,7 @@ AC_CHECK_TOOL(STRIP, strip)
 
 # Check for other host tools.
 
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -383,7 +384,7 @@ if test "${nl_cv_build_tests}" = "yes"; then
     NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CppUnit],
     [CPPUNIT],
     [cppunit],
-    [cppunit],
+    [-lcppunit],
     [
         # Check for required Boost (C++) headers.
 
@@ -411,7 +412,7 @@ if test "${with_corefoundation_source}" == "cflite"; then
     NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CoreFoundation],
     [CF],
     [CoreFoundation],
-    [CoreFoundation],
+    [-lCoreFoundation],
     [
         # Check for required CoreFoundation (via [Open]CFLite) headers.
 
