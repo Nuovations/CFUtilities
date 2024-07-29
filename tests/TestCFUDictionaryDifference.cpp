@@ -1400,7 +1400,7 @@ TestCFUDictionaryDifference :: TestDictionaryCreateWithKeysAndValues(const void 
     outDictionary = CFDictionaryCreate(kCFAllocatorDefault,
                                        inFirstKey,
                                        inFirstValue,
-                                       inCount,
+                                       static_cast<CFIndex>(inCount),
                                        &kCFTypeDictionaryKeyCallBacks,
                                        &kCFTypeDictionaryValueCallBacks);
     CPPUNIT_ASSERT(outDictionary != nullptr);
