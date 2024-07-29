@@ -1,3 +1,10 @@
+1.3.1 (2024-07-29)
+
+        * Addressed sign conversion errors / warnings in unit tests.
+
+        * Addressed GitHub continuous integration (CI) issues with
+          macOS on Apple Silicon and Homebrew.
+
 1.3.0 (2023-10-10)
 
         * Added C/C++ bindings for potentially removing a trailing
