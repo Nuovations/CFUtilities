@@ -182,6 +182,7 @@ jobs:
 
     - name: Bootstrap and Configure
       run: |
+        eval "$(brew shellenv)"
         export PATH="$(brew --prefix m4)/bin:${PATH}"
         ./bootstrap-configure -C --enable-coverage --with-boost=/usr/local
 
