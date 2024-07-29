@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 #
-#    Copyright (c) 2021 Nuovation System Designs, LLC. All rights reserved.
+#    Copyright (c) 2021-2024 Nuovation System Designs, LLC. All rights reserved.
 #    Copyright 2016-2018 Nest Labs Inc. All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
