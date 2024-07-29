@@ -1,0 +1,132 @@
+/* include/CFUtilities/CFUConfig.h.in.  Generated from configure.ac by autoheader.  */
+
+#ifndef CFUTILITIES_CFUCONFIG_H
+#define CFUTILITIES_CFUCONFIG_H
+
+/* CoreFoundation source */
+#undef CFUTILITIES_CF_SOURCE
+
+/* Define to 1 if you want to use an [Open]CFLite implementation source of
+   CoreFoundation for CFUtilities */
+#undef CFUTILITIES_CF_SOURCE_CFLITE
+
+/* Define to 1 if you want to use a system framework implementation source of
+   CoreFoundation for CFUtilities */
+#undef CFUTILITIES_CF_SOURCE_FRAMEWORK
+
+/* Define to 1 if your C++ compiler doesn't accept -c and -o together. */
+#undef CXX_NO_MINUS_C_MINUS_O
+
+/* Define to 1 if you have the <boost/type_traits.hpp> header file. */
+#undef HAVE_BOOST_TYPE_TRAITS_HPP
+
+/* Define to 1 if you have the 'CFPropertyListCreateFromStream' function. */
+#undef HAVE_CFPROPERTYLISTCREATEFROMSTREAM
+
+/* Define to 1 if you have the 'CFPropertyListCreateWithStream' function. */
+#undef HAVE_CFPROPERTYLISTCREATEWITHSTREAM
+
+/* Define to 1 if you have the 'CFPropertyListWrite' function. */
+#undef HAVE_CFPROPERTYLISTWRITE
+
+/* Define to 1 if you have the 'CFPropertyListWriteToStream' function. */
+#undef HAVE_CFPROPERTYLISTWRITETOSTREAM
+
+/* Define to 1 if you have the <CoreFoundation/CoreFoundation.h> header file.
+   */
+#undef HAVE_COREFOUNDATION_COREFOUNDATION_H
+
+/* Define to 1 if you have the <cppunit/BriefTestProgressListener.h> header
+   file. */
+#undef HAVE_CPPUNIT_BRIEFTESTPROGRESSLISTENER_H
+
+/* Define to 1 if you have the <cppunit/CompilerOutputter.h> header file. */
+#undef HAVE_CPPUNIT_COMPILEROUTPUTTER_H
+
+/* Define to 1 if you have the <cppunit/extensions/HelperMacros.h> header
+   file. */
+#undef HAVE_CPPUNIT_EXTENSIONS_HELPERMACROS_H
+
+/* Define to 1 if you have the <cppunit/extensions/TestFactoryRegistry.h>
+   header file. */
+#undef HAVE_CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
+
+/* Define to 1 if you have the <cppunit/TestAssert.h> header file. */
+#undef HAVE_CPPUNIT_TESTASSERT_H
+
+/* Define to 1 if you have the <cppunit/TestResultCollector.h> header file. */
+#undef HAVE_CPPUNIT_TESTRESULTCOLLECTOR_H
+
+/* Define to 1 if you have the <cppunit/TestResult.h> header file. */
+#undef HAVE_CPPUNIT_TESTRESULT_H
+
+/* Define to 1 if you have the <cppunit/ui/text/TestRunner.h> header file. */
+#undef HAVE_CPPUNIT_UI_TEXT_TESTRUNNER_H
+
+/* define if the compiler supports basic C++11 syntax */
+#undef HAVE_CXX11
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the 'CoreFoundation' library (-lCoreFoundation). */
+#undef HAVE_LIBCOREFOUNDATION
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
+#undef STDC_HEADERS
+
+#endif // CFUTILITIES_CFUCONFIG_H
