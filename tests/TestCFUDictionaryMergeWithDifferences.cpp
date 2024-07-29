@@ -1544,7 +1544,7 @@ TestCFUDictionaryMergeWithDifferences :: TestArrayCreateWithValues(const void **
 
     for (size_t i = 0; i < inCount; i++)
     {
-        CFArrayInsertValueAtIndex(outArray, i, inFirstValue[i]);
+        CFArrayInsertValueAtIndex(outArray, static_cast<CFIndex>(i), inFirstValue[i]);
     }
 }
 
