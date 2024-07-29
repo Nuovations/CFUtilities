@@ -184,7 +184,7 @@ jobs:
       run: |
         eval "$(brew shellenv)"
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C --enable-coverage --with-boost=/usr/local
+        ./bootstrap-configure -C --enable-coverage --with-boost="$(brew --prefix boost)" --with-cppunit="$(brew --prefix cppunit)"
 
     - name: Coding Style
       run: |
