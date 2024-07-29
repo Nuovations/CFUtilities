@@ -383,7 +383,7 @@ if test "${nl_cv_build_tests}" = "yes"; then
     NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CppUnit],
     [CPPUNIT],
     [cppunit],
-    [cppunit],
+    [-lcppunit],
     [
         # Check for required Boost (C++) headers.
 
