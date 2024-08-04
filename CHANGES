@@ -1,3 +1,9 @@
+1.3.2 (2024-08-03)
+
+        * Updated nlbuild-autotools to 1.7.8.
+
+        * Updated Doxygen configuration for Doxygen 1.11.0.
+
 1.3.1 (2024-07-29)
 
         * Addressed sign conversion errors / warnings in unit tests.
